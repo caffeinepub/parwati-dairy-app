@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, useLocation } from '@tanstack/react-router';
-import { Home, ShoppingBag, Phone, Menu } from 'lucide-react';
+import { Home, ShoppingBag, Phone, Menu, History, Truck } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Layout() {
@@ -10,6 +10,8 @@ export default function Layout() {
   const navItems = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/products', label: 'Products', icon: ShoppingBag },
+    { path: '/order-history', label: 'Order History', icon: History },
+    { path: '/delivery-schedule', label: 'Delivery Schedule', icon: Truck },
     { path: '/contact', label: 'Contact', icon: Phone },
   ];
 
@@ -37,7 +39,7 @@ export default function Layout() {
             </button>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-2">
+            <nav className="hidden lg:flex items-center gap-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -60,7 +62,7 @@ export default function Layout() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="lg:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
             >
               <Menu className="h-6 w-6" />
             </button>
@@ -68,7 +70,7 @@ export default function Layout() {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <nav className="md:hidden py-4 border-t border-border">
+            <nav className="lg:hidden py-4 border-t border-border">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (

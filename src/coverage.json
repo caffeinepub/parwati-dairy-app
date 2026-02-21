@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T09:47:15.390Z",
+  "generatedAt": "2026-02-21T11:27:24.415Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,29 +11,24 @@
     "implemented": 1,
     "items": [
       {
-        "id": "REQ-7",
-        "summary": "Replace the existing Parwati Dairy logo throughout the application with the new logo design featuring dairy products (milk can, pitcher, glass, butter), pastoral farm scene with cows and trees, decorative milk splash and green leaves, and blue ribbon banner with 'Parwati Dairy' text in cream-colored script font",
+        "id": "REQ-14",
+        "summary": "Make the QR code image on the OrderForm page clickable, so that when a user clicks on it, they are redirected to PhonePe for making payment using the displayed QR code",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/Layout.tsx",
-          "frontend/src/pages/Home.tsx"
+          "frontend/src/pages/OrderForm.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/Layout.tsx",
-          "frontend/src/pages/Home.tsx"
+          "frontend/src/pages/OrderForm.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
-    "build-template/README.md",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/parwati-dairy-logo.dim_800x800.png",
-    "frontend/src/components/Layout.tsx",
-    "frontend/src/pages/Home.tsx",
+    "frontend/src/pages/OrderForm.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

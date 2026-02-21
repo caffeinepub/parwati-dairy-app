@@ -89,10 +89,124 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface backendInterface {
+export type Time = bigint;
+export interface Order {
+    id: bigint;
+    status: string;
+    orderDate: Time;
+    quantity: bigint;
+    customerId: bigint;
+    product: Product;
 }
+export interface Product {
+    id: bigint;
+    name: string;
+    quantity: bigint;
+    price: bigint;
+}
+export interface Delivery {
+    deliveryDate: Time;
+    deliveryTime: string;
+    orderId: bigint;
+}
+export interface backendInterface {
+    cancelOrder(orderId: bigint): Promise<boolean>;
+    getDeliverySchedule(orderId: bigint): Promise<Delivery | null>;
+    getOrderHistory(customerId: bigint): Promise<Array<Order>>;
+    placeOrder(customerId: bigint, product: Product, quantity: bigint): Promise<bigint>;
+    scheduleDelivery(orderId: bigint, deliveryDate: Time, deliveryTime: string): Promise<boolean>;
+    updateOrderStatus(orderId: bigint, newStatus: string): Promise<boolean>;
+}
+import type { Delivery as _Delivery } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async cancelOrder(arg0: bigint): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.cancelOrder(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.cancelOrder(arg0);
+            return result;
+        }
+    }
+    async getDeliverySchedule(arg0: bigint): Promise<Delivery | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getDeliverySchedule(arg0);
+                return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getDeliverySchedule(arg0);
+            return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getOrderHistory(arg0: bigint): Promise<Array<Order>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getOrderHistory(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getOrderHistory(arg0);
+            return result;
+        }
+    }
+    async placeOrder(arg0: bigint, arg1: Product, arg2: bigint): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.placeOrder(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.placeOrder(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async scheduleDelivery(arg0: bigint, arg1: Time, arg2: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.scheduleDelivery(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.scheduleDelivery(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async updateOrderStatus(arg0: bigint, arg1: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateOrderStatus(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateOrderStatus(arg0, arg1);
+            return result;
+        }
+    }
+}
+function from_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Delivery]): Delivery | null {
+    return value.length === 0 ? null : value[0];
 }
 export interface CreateActorOptions {
     agent?: Agent;

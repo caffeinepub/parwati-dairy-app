@@ -1,45 +1,40 @@
 {
   "kind": "build_request",
-  "title": "Update Parwati Dairy logo with new design",
+  "title": "Add PhonePe redirect on QR code click",
   "projectName": "Parwati Dairy",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-7",
-      "text": "Replace the existing Parwati Dairy logo throughout the application with the new logo design featuring dairy products (milk can, pitcher, glass, butter), pastoral farm scene with cows and trees, decorative milk splash and green leaves, and blue ribbon banner with 'Parwati Dairy' text in cream-colored script font",
+      "id": "REQ-14",
+      "text": "Make the QR code image on the OrderForm page clickable, so that when a user clicks on it, they are redirected to PhonePe for making payment using the displayed QR code",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-logo-update"
+          "msg-latest"
         ],
         "quotes": [
-          "PLEASE UPDATE PARWATI DAIRY LOGO",
-          "YES PLEASE"
+          "please add when you click on qr code it will redirect to phonepe for making payment with given qr code"
         ]
       },
       "acceptanceCriteria": [
-        "New logo is displayed in the header/Layout component",
-        "New logo appears on the Home page hero section",
-        "Logo maintains proper aspect ratio and quality at different screen sizes",
-        "Logo integrates seamlessly with the existing warm dairy-themed color scheme"
+        "The QR code image on OrderForm.tsx is wrapped in a clickable element (button or link)",
+        "Clicking the QR code opens PhonePe payment interface with the QR code data",
+        "The interaction works on mobile devices where PhonePe app is installed",
+        "Visual feedback (cursor pointer, hover effect) indicates the QR code is clickable"
       ]
     }
   ],
   "constraints": [
-    "Maintain the existing warm, trustworthy color scheme (avoid blue and purple theme changes)",
-    "Preserve all existing functionality and navigation",
-    "Ensure mobile-optimized display of the new logo"
+    "Must work with the existing State Bank of India QR code image already displayed on OrderForm page",
+    "Should open PhonePe app if installed on mobile, or PhonePe web interface as fallback"
   ],
   "nonGoals": [
-    "Redesigning the overall application layout",
-    "Changing the product offerings or pricing",
-    "Modifying the WhatsApp integration functionality",
-    "Altering the contact information or business details"
+    "Creating a new QR code or changing the QR code image",
+    "Implementing payment processing or verification logic",
+    "Adding payment confirmation or callback handling"
   ],
   "imageRequirements": {
-    "required": [
-      "Parwati Dairy logo with dairy products (milk can, pitcher, glass, butter blocks), pastoral farm scene with brown and white cows grazing in green fields with trees and red barn, decorative milk splash and green leaves border, blue ribbon banner with 'Parwati Dairy' in cream script font, gold trim accents (parwati-dairy-logo.dim_800x800.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

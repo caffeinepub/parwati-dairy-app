@@ -1,12 +1,14 @@
 {
   "frontend/src/index.css": "Global styles with warm dairy-themed OKLCH color palette (creamy whites, warm oranges, earth tones) and Hindi font support for both light and dark modes.",
   "frontend/tailwind.config.js": "Tailwind configuration with custom warm color tokens, Noto Sans Devanagari font family for Hindi text, and dairy-appropriate design system.",
-  "frontend/src/App.tsx": "Main application component with TanStack Router setup for home, products, order form, and contact pages wrapped in a Layout component.",
-  "frontend/src/components/Layout.tsx": "Responsive layout component with sticky header featuring the new Parwati Dairy logo, Hindi tagline, mobile-friendly navigation menu, and footer with caffeine.ai attribution.",
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup including routes for home, products, order form, contact, order history, and delivery schedule pages, all wrapped in Layout component.",
+  "frontend/src/components/Layout.tsx": "Responsive layout component with sticky header featuring Parwati Dairy logo, Hindi tagline, navigation menu including Order History and Delivery Schedule links, and footer with caffeine.ai attribution.",
   "frontend/src/pages/Home.tsx": "Home page displaying the new Parwati Dairy logo prominently in the hero section, Hindi tagline, and four navigation cards for milk, paneer, ghee orders, and contact.",
   "frontend/src/pages/Products.tsx": "Products page showing hero image and three product cards (Milk ₹60/L, Paneer ₹400/Kg, Ghee ₹1500/Kg) with descriptions, prices, and order buttons.",
-  "frontend/src/pages/OrderForm.tsx": "Order form page with validated input fields for name, phone, address, product selection, and quantity, with WhatsApp submission button.",
+  "frontend/src/pages/OrderForm.tsx": "Order form page with validated input fields for customer details and product selection, featuring a clickable State Bank of India payment QR code that redirects to PhonePe app (on mobile) or PhonePe web interface (on desktop) when clicked, with hover effects and visual feedback to indicate interactivity.",
   "frontend/src/pages/Contact.tsx": "Contact page displaying Parwati Dairy's full address, two phone numbers (8553965714, 6205017829), and WhatsApp contact button.",
   "frontend/src/utils/whatsapp.ts": "WhatsApp integration utility that generates properly formatted order messages and opens WhatsApp with phone number 8553965714.",
-  "frontend/src/hooks/useQueries.ts": "React Query hooks file for backend interactions (currently empty as backend has no methods)."
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for backend interactions including useOrderHistory to fetch customer orders and useDeliverySchedule to fetch delivery information for specific orders.",
+  "frontend/src/pages/OrderHistory.tsx": "Order history page displaying customer's past orders in card layout with product details, order date, status badges, and inline delivery schedule information for pending orders, with proper TypeScript typing using React.ReactElement.",
+  "frontend/src/pages/DeliverySchedule.tsx": "Delivery schedule page showing upcoming deliveries for pending orders with formatted dates, times, and delivery information cards, plus helpful delivery guidelines, with proper TypeScript typing for Order interface."
 }

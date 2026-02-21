@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { ShoppingCart, Send } from 'lucide-react';
+import { ShoppingCart, Send, QrCode } from 'lucide-react';
 import { sendWhatsAppOrder } from '../utils/whatsapp';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 interface OrderFormData {
   name: string;
@@ -84,6 +85,25 @@ export default function OrderForm() {
     // Clear error when user starts typing
     if (errors[name as keyof OrderFormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleQRCodeClick = () => {
+    // Detect if user is on mobile device
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Try to open PhonePe app using deep link
+      // The phonepe:// scheme will open the PhonePe app if installed
+      window.location.href = 'phonepe://';
+      
+      // Fallback to PhonePe web interface after a short delay if app doesn't open
+      setTimeout(() => {
+        window.open('https://www.phonepe.com/', '_blank');
+      }, 1500);
+    } else {
+      // On desktop, open PhonePe web interface
+      window.open('https://www.phonepe.com/', '_blank');
     }
   };
 
@@ -220,6 +240,50 @@ export default function OrderForm() {
                 {errors.quantity && (
                   <p className="mt-1 text-sm text-destructive">{errors.quantity}</p>
                 )}
+              </div>
+
+              {/* Payment QR Code Section - State Bank of India */}
+              <div className="pt-4 border-t border-border">
+                <div className="text-center mb-4">
+                  <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-3">
+                    <QrCode className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-1">
+                    Scan to Pay
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    State Bank of India - Account 2430
+                  </p>
+                </div>
+                <div className="flex justify-center mb-4">
+                  <button
+                    type="button"
+                    onClick={handleQRCodeClick}
+                    className="bg-white p-4 rounded-xl shadow-md border-2 border-primary/20 cursor-pointer hover:border-primary/40 hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    aria-label="Click to open PhonePe for payment"
+                  >
+                    <img
+                      src="/assets/image.png"
+                      alt="State Bank of India Payment QR Code - Account 2430"
+                      className="w-56 h-56 md:w-64 md:h-64 object-contain pointer-events-none"
+                      onError={(e) => {
+                        console.error('QR code image failed to load');
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </button>
+                </div>
+                <div className="bg-accent/50 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-foreground text-center">
+                    <strong>Payment Instructions:</strong>
+                    <br />
+                    1. Click on the QR code above to open PhonePe
+                    <br />
+                    2. Complete the payment to State Bank of India account 2430
+                    <br />
+                    3. Click the button below to send your order details
+                  </p>
+                </div>
               </div>
 
               {/* Submit Button */}

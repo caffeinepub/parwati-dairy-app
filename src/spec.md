@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Update the Parwati Dairy logo throughout the application with the new design featuring dairy products and pastoral farm scene.
+**Goal:** Make the QR code on the OrderForm page clickable to redirect users to PhonePe for payment.
 
 **Planned changes:**
-- Replace existing logo in header/Layout component with new logo design
-- Update logo in Home page hero section
-- Ensure logo displays properly at different screen sizes with proper aspect ratio
+- Wrap the existing QR code image in a clickable element on the OrderForm page
+- Add click handler to open PhonePe app (on mobile) or PhonePe web interface (fallback)
+- Add visual feedback (pointer cursor, hover effect) to indicate the QR code is clickable
 
-**User-visible outcome:** Users will see the updated Parwati Dairy logo with dairy products (milk can, pitcher, glass, butter), pastoral farm scene with cows and trees, decorative milk splash and green leaves, and blue ribbon banner throughout the application.
+**User-visible outcome:** Users can click on the QR code image to be redirected to PhonePe, where they can complete payment using the displayed QR code.

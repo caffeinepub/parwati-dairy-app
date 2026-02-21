@@ -8,10 +8,68 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const idlService = IDL.Service({});
+export const Time = IDL.Int;
+export const Delivery = IDL.Record({
+  'deliveryDate' : Time,
+  'deliveryTime' : IDL.Text,
+  'orderId' : IDL.Nat,
+});
+export const Product = IDL.Record({
+  'id' : IDL.Nat,
+  'name' : IDL.Text,
+  'quantity' : IDL.Nat,
+  'price' : IDL.Nat,
+});
+export const Order = IDL.Record({
+  'id' : IDL.Nat,
+  'status' : IDL.Text,
+  'orderDate' : Time,
+  'quantity' : IDL.Nat,
+  'customerId' : IDL.Nat,
+  'product' : Product,
+});
+
+export const idlService = IDL.Service({
+  'cancelOrder' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'getDeliverySchedule' : IDL.Func([IDL.Nat], [IDL.Opt(Delivery)], ['query']),
+  'getOrderHistory' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
+  'placeOrder' : IDL.Func([IDL.Nat, Product, IDL.Nat], [IDL.Nat], []),
+  'scheduleDelivery' : IDL.Func([IDL.Nat, Time, IDL.Text], [IDL.Bool], []),
+  'updateOrderStatus' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Bool], []),
+});
 
 export const idlInitArgs = [];
 
-export const idlFactory = ({ IDL }) => { return IDL.Service({}); };
+export const idlFactory = ({ IDL }) => {
+  const Time = IDL.Int;
+  const Delivery = IDL.Record({
+    'deliveryDate' : Time,
+    'deliveryTime' : IDL.Text,
+    'orderId' : IDL.Nat,
+  });
+  const Product = IDL.Record({
+    'id' : IDL.Nat,
+    'name' : IDL.Text,
+    'quantity' : IDL.Nat,
+    'price' : IDL.Nat,
+  });
+  const Order = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : IDL.Text,
+    'orderDate' : Time,
+    'quantity' : IDL.Nat,
+    'customerId' : IDL.Nat,
+    'product' : Product,
+  });
+  
+  return IDL.Service({
+    'cancelOrder' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'getDeliverySchedule' : IDL.Func([IDL.Nat], [IDL.Opt(Delivery)], ['query']),
+    'getOrderHistory' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
+    'placeOrder' : IDL.Func([IDL.Nat, Product, IDL.Nat], [IDL.Nat], []),
+    'scheduleDelivery' : IDL.Func([IDL.Nat, Time, IDL.Text], [IDL.Bool], []),
+    'updateOrderStatus' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Bool], []),
+  });
+};
 
 export const init = ({ IDL }) => { return []; };

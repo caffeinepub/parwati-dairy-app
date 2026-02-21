@@ -1,15 +1,19 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
+  "projectStateVersion": 13,
   "summary": "Parwati Dairy mobile app for ordering milk, paneer, and ghee with WhatsApp integration",
   "architectural_notes": [
     "Mobile-first responsive design for dairy product ordering",
     "WhatsApp Business API integration for order submission",
-    "Hindi/English bilingual support for branding"
+    "Hindi/English bilingual support for branding",
+    "QR code payment integration for order transactions",
+    "Customer order history database and tracking system",
+    "Delivery scheduling system for order management"
   ],
-  "known_issues": [],
+  "known_issues": [
+    "QR code payment feature not displaying on the order form page"
+  ],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Parwati Dairy logo with dairy products (milk can, pitcher, glass, butter blocks), pastoral farm scene with brown and white cows grazing in green fields with trees and red barn, decorative milk splash and green leaves border, blue ribbon banner with 'Parwati Dairy' in cream script font, gold trim accents (parwati-dairy-logo.dim_800x800.png)",
   "existing_features": [
     {
       "id": "feature-create-a-home-screen-displaying-parwati-dairy-as-the-main-heading-with-the-tagline-and-four-navigation-buttons-labeled-milk-order-paneer-order-ghee-order-and-contact",
@@ -66,6 +70,62 @@
         "REQ-7"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-display-a-qr-code-for-payment-requests-on-the-order-form-page-and-or-a-dedicated-payment-section-allowing-customers-to-scan-and-complete-payments",
+      "title": "Display a QR code for payment requests on the order form page and/or a dedicated payment section, allowing customers to scan and complete payments",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-customer-order-history-tracking-feature-that-stores-and-displays-past-orders-with-details-including-product-quantity-date-and-order-status",
+      "title": "Create a customer order history tracking feature that stores and displays past orders with details including product, quantity, date, and order status",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-delivery-schedule-feature-that-allows-customers-to-view-upcoming-delivery-dates-and-times-for-their-orders",
+      "title": "Implement a delivery schedule feature that allows customers to view upcoming delivery dates and times for their orders",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-navigation-access-to-order-history-and-delivery-schedule-from-the-main-application-menu",
+      "title": "Add navigation access to order history and delivery schedule from the main application menu",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-qr-code-image-for-payment-on-the-orderform-page-positioned-prominently-after-the-product-selection-and-quantity-fields-but-before-the-whatsapp-submit-button",
+      "title": "Display a QR code image for payment on the OrderForm page, positioned prominently after the product selection and quantity fields but before the WhatsApp submit button",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-qr-code-image-on-the-orderform-page-with-the-uploaded-state-bank-of-india-qr-code-image-image-png-showing-account-number-2430",
+      "title": "Replace the existing QR code image on the OrderForm page with the uploaded State Bank of India QR code image (image.png) showing account number 2430",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-qr-code-image-on-the-orderform-page-clickable-so-that-when-a-user-clicks-on-it-they-are-redirected-to-phonepe-for-making-payment-using-the-displayed-qr-code",
+      "title": "Make the QR code image on the OrderForm page clickable, so that when a user clicks on it, they are redirected to PhonePe for making payment using the displayed QR code",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -96,6 +156,30 @@
     {
       "id": "AR-5",
       "summary": "Contact page with business address and phone numbers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add QR code for payment requests",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Add customer order history tracking feature",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add delivery schedule feature",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "QR code should redirect to PhonePe for payment when clicked",
       "reqIds": [],
       "status": "pending"
     }

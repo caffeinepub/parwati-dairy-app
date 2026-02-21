@@ -1,19 +1,30 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import type { Order, Delivery } from '../backend';
 
-// This file is for React Query hooks that interact with the backend
-// Currently, the backend has no methods, so no queries are needed
-// Add custom hooks here when backend functionality is added
-
-export function useExample() {
+// Hook to fetch order history for a customer
+export function useOrderHistory(customerId: number) {
   const { actor, isFetching } = useActor();
 
-  return useQuery({
-    queryKey: ['example'],
+  return useQuery<Order[]>({
+    queryKey: ['orderHistory', customerId],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getOrderHistory(BigInt(customerId));
+    },
+    enabled: !!actor && !isFetching && customerId > 0,
+  });
+}
+
+// Hook to fetch delivery schedule for a specific order
+export function useDeliverySchedule(orderId: bigint) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Delivery | null>({
+    queryKey: ['deliverySchedule', orderId.toString()],
     queryFn: async () => {
       if (!actor) return null;
-      // Call backend methods here when available
-      return null;
+      return actor.getDeliverySchedule(orderId);
     },
     enabled: !!actor && !isFetching,
   });
