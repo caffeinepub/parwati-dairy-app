@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 5,
+  "summary": "Parwati Dairy mobile app for ordering milk, paneer, and ghee with WhatsApp integration",
+  "architectural_notes": [
+    "Mobile-first responsive design for dairy product ordering",
+    "WhatsApp Business API integration for order submission",
+    "Hindi/English bilingual support for branding"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Parwati Dairy logo with dairy products (milk can, pitcher, glass, butter blocks), pastoral farm scene with brown and white cows grazing in green fields with trees and red barn, decorative milk splash and green leaves border, blue ribbon banner with 'Parwati Dairy' in cream script font, gold trim accents (parwati-dairy-logo.dim_800x800.png)",
+  "existing_features": [
+    {
+      "id": "feature-create-a-home-screen-displaying-parwati-dairy-as-the-main-heading-with-the-tagline-and-four-navigation-buttons-labeled-milk-order-paneer-order-ghee-order-and-contact",
+      "title": "Create a home screen displaying 'Parwati Dairy' as the main heading with the tagline 'शुद्ध दूध • पनीर • देसी घी', and four navigation buttons labeled 'Milk Order', 'Paneer Order', 'Ghee Order', and 'Contact'",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-products-page-showing-three-products-with-prices-milk-at-60-per-litre-paneer-at-400-per-kg-and-ghee-at-1500-per-kg-with-an-order-now-button-for-each-product",
+      "title": "Create a products page showing three products with prices: Milk at ₹60 per Litre, Paneer at ₹400 per Kg, and Ghee at ₹1500 per Kg, with an 'Order Now' button for each product",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-an-order-form-with-input-fields-for-name-phone-address-product-dropdown-or-selection-and-quantity-with-a-send-order-on-whatsapp-button",
+      "title": "Create an order form with input fields for Name, Phone, Address, Product (dropdown or selection), and Quantity, with a 'Send Order on WhatsApp' button",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-whatsapp-integration-that-opens-whatsapp-with-phone-number-8553965714-and-pre-fills-the-message-with-hello-parwati-dairy-i-want-to-order-product-selected-product-quantity-entered-quantity-name-entered-name-address-entered-address-phone-entered-phone-delivery-yes",
+      "title": "Implement WhatsApp integration that opens WhatsApp with phone number 8553965714 and pre-fills the message with: 'Hello Parwati Dairy,\n\nI want to order:\n\nProduct: [selected product]\nQuantity: [entered quantity]\n\nName: [entered name]\nAddress: [entered address]\nPhone: [entered phone]\n\nDelivery: Yes'",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-contact-page-displaying-parwati-dairy-business-name-full-address-srirampath-kadma-road-ramnagar-hazaribagh-jharkhand-825301-and-two-phone-numbers-8553965714-and-6205017829",
+      "title": "Create a contact page displaying 'Parwati Dairy' business name, full address 'Srirampath Kadma Road, Ramnagar, Hazaribagh, Jharkhand – 825301', and two phone numbers: 8553965714 and 6205017829",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-mobile-optimized-interface-with-a-clean-professional-dairy-business-aesthetic-using-warm-trustworthy-colors-avoid-blue-and-purple-clear-typography-for-hindi-and-english-text-and-intuitive-navigation-between-all-screens",
+      "title": "Design a mobile-optimized interface with a clean, professional dairy business aesthetic using warm, trustworthy colors (avoid blue and purple), clear typography for Hindi and English text, and intuitive navigation between all screens",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-parwati-dairy-logo-throughout-the-application-with-the-new-logo-design-featuring-dairy-products-milk-can-pitcher-glass-butter-pastoral-farm-scene-with-cows-and-trees-decorative-milk-splash-and-green-leaves-and-blue-ribbon-banner-with-parwati-dairy-text-in-cream-colored-script-font",
+      "title": "Replace the existing Parwati Dairy logo throughout the application with the new logo design featuring dairy products (milk can, pitcher, glass, butter), pastoral farm scene with cows and trees, decorative milk splash and green leaves, and blue ribbon banner with 'Parwati Dairy' text in cream-colored script font",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Home screen with branding and product navigation buttons",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Products & pricing page displaying milk, paneer, and ghee with prices",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Order form with fields for name, phone, address, product selection, and quantity",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "WhatsApp integration to send order details to 8553965714",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Contact page with business address and phone numbers",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Parwati Dairy App",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

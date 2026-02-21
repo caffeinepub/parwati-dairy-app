@@ -1,0 +1,21 @@
+{
+  "backend/main.mo": "Empty Motoko actor with no methods or state defined.",
+  "feature_evidence.json": "Feature evidence report documenting the logo replacement feature across Layout.tsx and Home.tsx with high confidence.",
+  "frontend-file-summaries.txt": "Text file containing JSON-formatted summaries of all frontend source files including styling, components, pages, and utilities.",
+  "frontend/index.css": "Tailwind CSS configuration with OKLCH color variables for light and dark modes using neutral grayscale palette.",
+  "frontend/index.html": "HTML entry point with root div and module script reference to main.tsx.",
+  "frontend/src/App.tsx": "TanStack Router setup defining routes for home, products, order, and contact pages wrapped in Layout component.",
+  "frontend/src/components/Layout.tsx": "Responsive layout with sticky header displaying Parwati Dairy logo, Hindi tagline, desktop/mobile navigation, and footer with caffeine.ai attribution.",
+  "frontend/src/hooks/useActor.ts": "React Query hook managing authenticated/anonymous backend actor creation with identity-based invalidation and refetching.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Internet Identity authentication provider and hook managing login, logout, identity state, and AuthClient lifecycle with delegation validation.",
+  "frontend/src/hooks/useQueries.ts": "Placeholder file for React Query hooks to interact with backend; currently contains only an example hook template.",
+  "frontend/src/index.css": "Tailwind CSS with warm dairy-themed OKLCH color palette (creamy whites, warm oranges, earth tones) and Noto Sans Devanagari font support for Hindi text.",
+  "frontend/src/main.tsx": "React application entry point wrapping App with QueryClientProvider and InternetIdentityProvider.",
+  "frontend/src/pages/Contact.tsx": "Contact page component displaying Parwati Dairy's location (Ramnagar, Hazaribagh), phone numbers (8553965714 primary, 6205017829), and business hours with styled cards using Lucide icons.",
+  "frontend/src/pages/Home.tsx": "Home page component featuring hero section with logo, navigation buttons for Milk/Paneer/Ghee orders and Contact, plus a features section highlighting quality, freshness, and delivery benefits.",
+  "frontend/src/pages/OrderForm.tsx": "Order form component with validation for name, phone, address, product selection (Milk/Paneer/Ghee with prices), and quantity fields that submits orders via WhatsApp integration.",
+  "frontend/src/pages/Products.tsx": "Products page displaying three dairy items (Milk ₹60/L, Paneer ₹400/Kg, Ghee ₹1500/Kg) in a grid layout with hero image, descriptions, and order buttons linking to the order form.",
+  "frontend/src/utils/whatsapp.ts": "Utility function that formats order data into a WhatsApp message and opens WhatsApp Web/app to send the order to phone number 918553965714.",
+  "frontend/tailwind.config.js": "Tailwind CSS configuration with custom color scheme using OKLCH color space, extended typography with Hindi font support (Noto Sans Devanagari), custom shadows, and animation utilities.",
+  "project_state.json": "Project state file tracking a Parwati Dairy mobile app with WhatsApp ordering integration, bilingual support, and features for milk/paneer/ghee orders. Contains architectural notes, existing features, requirements, and image specifications for a mobile-first dairy product ordering system."
+}

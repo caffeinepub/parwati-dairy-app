@@ -1,0 +1,45 @@
+{
+  "kind": "build_request",
+  "title": "Update Parwati Dairy logo with new design",
+  "projectName": "Parwati Dairy",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-7",
+      "text": "Replace the existing Parwati Dairy logo throughout the application with the new logo design featuring dairy products (milk can, pitcher, glass, butter), pastoral farm scene with cows and trees, decorative milk splash and green leaves, and blue ribbon banner with 'Parwati Dairy' text in cream-colored script font",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-logo-update"
+        ],
+        "quotes": [
+          "PLEASE UPDATE PARWATI DAIRY LOGO",
+          "YES PLEASE"
+        ]
+      },
+      "acceptanceCriteria": [
+        "New logo is displayed in the header/Layout component",
+        "New logo appears on the Home page hero section",
+        "Logo maintains proper aspect ratio and quality at different screen sizes",
+        "Logo integrates seamlessly with the existing warm dairy-themed color scheme"
+      ]
+    }
+  ],
+  "constraints": [
+    "Maintain the existing warm, trustworthy color scheme (avoid blue and purple theme changes)",
+    "Preserve all existing functionality and navigation",
+    "Ensure mobile-optimized display of the new logo"
+  ],
+  "nonGoals": [
+    "Redesigning the overall application layout",
+    "Changing the product offerings or pricing",
+    "Modifying the WhatsApp integration functionality",
+    "Altering the contact information or business details"
+  ],
+  "imageRequirements": {
+    "required": [
+      "Parwati Dairy logo with dairy products (milk can, pitcher, glass, butter blocks), pastoral farm scene with brown and white cows grazing in green fields with trees and red barn, decorative milk splash and green leaves border, blue ribbon banner with 'Parwati Dairy' in cream script font, gold trim accents (parwati-dairy-logo.dim_800x800.png)"
+    ],
+    "edits": []
+  }
+}
