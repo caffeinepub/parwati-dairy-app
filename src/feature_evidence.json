@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-make-the-qr-code-image-on-the-orderform-page-clickable-so-that-when-a-user-clicks-on-it-they-are-redirected-to-phonepe-for-making-payment-using-the-displayed-qr-code",
-      "featureTitle": "Make the QR code image on the OrderForm page clickable, so that when a user clicks on it, they are redirected to PhonePe for making payment using the displayed QR code",
+      "featureId": "feature-debug-and-fix-the-errors-occurring-in-the-order-history-feature-to-ensure-it-correctly-fetches-and-displays-customer-order-data-without-crashes-or-error-states",
+      "featureTitle": "Debug and fix the errors occurring in the order history feature to ensure it correctly fetches and displays customer order data without crashes or error states",
       "files": [
-        "frontend/src/pages/OrderForm.tsx"
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/OrderHistory.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,7 +18,48 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-14"
+        "REQ-15"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-debug-and-fix-the-errors-occurring-in-the-delivery-schedule-feature-to-ensure-it-correctly-fetches-and-displays-delivery-information-without-crashes-or-error-states",
+      "featureTitle": "Debug and fix the errors occurring in the delivery schedule feature to ensure it correctly fetches and displays delivery information without crashes or error states",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/DeliverySchedule.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-16"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-delivery-date-field-to-the-delivery-schedule-display-showing-when-each-order-is-scheduled-for-delivery",
+      "featureTitle": "Add delivery date field to the delivery schedule display, showing when each order is scheduled for delivery",
+      "files": [
+        "frontend/src/pages/DeliverySchedule.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-17"
       ],
       "confidence": "high"
     }

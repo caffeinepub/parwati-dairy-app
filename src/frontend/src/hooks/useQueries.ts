@@ -10,9 +10,12 @@ export function useOrderHistory(customerId: number) {
     queryKey: ['orderHistory', customerId],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getOrderHistory(BigInt(customerId));
+      const result = await actor.getOrderHistory(BigInt(customerId));
+      return result || [];
     },
     enabled: !!actor && !isFetching && customerId > 0,
+    retry: 2,
+    staleTime: 30000, // 30 seconds
   });
 }
 
@@ -24,8 +27,11 @@ export function useDeliverySchedule(orderId: bigint) {
     queryKey: ['deliverySchedule', orderId.toString()],
     queryFn: async () => {
       if (!actor) return null;
-      return actor.getDeliverySchedule(orderId);
+      const result = await actor.getDeliverySchedule(orderId);
+      return result || null;
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && !!orderId,
+    retry: 1,
+    staleTime: 30000, // 30 seconds
   });
 }

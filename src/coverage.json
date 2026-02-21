@@ -1,34 +1,63 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T11:27:24.415Z",
+  "generatedAt": "2026-02-21T11:36:55.674Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-14",
-        "summary": "Make the QR code image on the OrderForm page clickable, so that when a user clicks on it, they are redirected to PhonePe for making payment using the displayed QR code",
+        "id": "REQ-15",
+        "summary": "Debug and fix the errors occurring in the order history feature to ensure it correctly fetches and displays customer order data without crashes or error states",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/OrderForm.tsx"
+          "frontend/src/pages/OrderHistory.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/pages/OrderForm.tsx"
+          "frontend/src/pages/OrderHistory.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-16",
+        "summary": "Debug and fix the errors occurring in the delivery schedule feature to ensure it correctly fetches and displays delivery information without crashes or error states",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DeliverySchedule.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DeliverySchedule.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-17",
+        "summary": "Add delivery date field to the delivery schedule display, showing when each order is scheduled for delivery",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DeliverySchedule.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DeliverySchedule.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/pages/OrderForm.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/DeliverySchedule.tsx",
+    "frontend/src/pages/OrderHistory.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

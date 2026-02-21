@@ -14,12 +14,17 @@ export default function OrderHistory() {
   const { data: orders, isLoading, error } = useOrderHistory(customerId);
 
   const formatDate = (timestamp: bigint) => {
-    const date = new Date(Number(timestamp) / 1000000); // Convert nanoseconds to milliseconds
-    return date.toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    try {
+      // Convert nanoseconds to milliseconds
+      const date = new Date(Number(timestamp / 1_000_000n));
+      return date.toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch (e) {
+      return 'Invalid date';
+    }
   };
 
   const getStatusIcon = (status: string) => {
@@ -75,9 +80,18 @@ export default function OrderHistory() {
           <div className="max-w-4xl mx-auto">
             <Card className="border-destructive">
               <CardContent className="pt-6">
-                <p className="text-destructive text-center">
-                  Error loading order history. Please try again later.
-                </p>
+                <div className="text-center">
+                  <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+                  <p className="text-destructive font-semibold mb-2">
+                    Error loading order history
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {error instanceof Error ? error.message : 'Please try again later.'}
+                  </p>
+                  <Button onClick={() => window.location.reload()} variant="outline">
+                    Retry
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -122,7 +136,13 @@ export default function OrderHistory() {
           ) : (
             <div className="space-y-4">
               {orders.map((order) => (
-                <OrderCard key={Number(order.id)} order={order} formatDate={formatDate} getStatusIcon={getStatusIcon} getStatusVariant={getStatusVariant} />
+                <OrderCard 
+                  key={Number(order.id)} 
+                  order={order} 
+                  formatDate={formatDate} 
+                  getStatusIcon={getStatusIcon} 
+                  getStatusVariant={getStatusVariant} 
+                />
               ))}
             </div>
           )}
@@ -176,7 +196,7 @@ function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: Order
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Product</p>
-              <p className="font-semibold text-foreground">{order.product.name}</p>
+              <p className="font-semibold text-foreground">{order.product?.name || 'N/A'}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Quantity</p>
@@ -191,7 +211,7 @@ function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: Order
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Price</p>
-              <p className="font-semibold text-foreground">₹{Number(order.product.price)}</p>
+              <p className="font-semibold text-foreground">₹{Number(order.product?.price || 0)}</p>
             </div>
           </div>
 

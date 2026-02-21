@@ -1,22 +1,63 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add PhonePe redirect on QR code click",
+  "title": "Fix order history and delivery schedule errors, add delivery date display",
   "requirements": [
     {
-      "id": "REQ-14",
-      "summary": "Make QR code clickable to redirect to PhonePe payment interface",
+      "id": "REQ-15",
+      "summary": "Debug and fix order history errors to ensure correct fetching and display of customer order data",
       "acceptanceCriteria": [
-        "The QR code image on OrderForm.tsx is wrapped in a clickable element (button or link)",
-        "Clicking the QR code opens PhonePe payment interface with the QR code data",
-        "The interaction works on mobile devices where PhonePe app is installed",
-        "Visual feedback (cursor pointer, hover effect) indicates the QR code is clickable"
+        "Order history page loads without errors",
+        "Customer orders are fetched successfully from the backend",
+        "Order history displays all past orders with product, quantity, date, and status"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/OrderForm.tsx",
+          "path": "frontend/src/pages/OrderHistory.tsx",
           "operation": "modify",
-          "description": "Wrap the existing State Bank of India QR code image (frontend/public/assets/generated/payment-qr.dim_400x400.png) in a clickable button element. Add onClick handler that attempts to open PhonePe app using the phonepe:// deep link scheme on mobile devices, with fallback to PhonePe web interface (https://phon.pe/) for desktop or when app is not installed. Add visual feedback with cursor-pointer class and hover effects (scale transform, opacity change) to indicate clickability. Ensure the button maintains the current QR code image dimensions and styling."
+          "description": "Fix the order history implementation to properly handle the backend response structure. Update the component to correctly extract and display order data including product details (name, price), quantity, order date, and status. Ensure proper error handling for null/undefined values and add fallback UI for empty order lists. Verify the useOrderHistory hook is called with the correct customerId parameter."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Fix the useOrderHistory hook to properly handle the backend getOrderHistory response. Ensure the query is enabled only when both actor and customerId are available. Add proper error handling and retry logic. Verify the customerId parameter is correctly typed as bigint and passed to the backend function."
+        }
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "summary": "Debug and fix delivery schedule errors to ensure correct fetching and display of delivery information",
+      "acceptanceCriteria": [
+        "Delivery schedule page loads without errors",
+        "Delivery information is fetched successfully from the backend",
+        "Delivery schedule displays all pending deliveries with order details"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DeliverySchedule.tsx",
+          "operation": "modify",
+          "description": "Fix the delivery schedule implementation to properly handle the backend response. The current approach fetches orders with 'placed' status and then attempts to fetch delivery details for each order. Update to handle cases where getDeliverySchedule returns null (no delivery scheduled yet). Add proper error boundaries and loading states. Ensure the component correctly displays delivery time and handles empty delivery lists gracefully."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Fix the useDeliverySchedule hook to properly handle the backend getDeliverySchedule response which returns Delivery | null. Add proper null checking and error handling. Ensure the orderId parameter is correctly typed as bigint. Consider adding a composite query that fetches both order details and delivery schedule together to avoid multiple backend calls."
+        }
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "summary": "Add delivery date field to the delivery schedule display with user-friendly formatting",
+      "acceptanceCriteria": [
+        "Delivery date is stored in the backend Delivery type",
+        "Delivery date is displayed for each delivery in the delivery schedule",
+        "Date is formatted in a user-friendly format (e.g., 'January 15, 2024' or 'DD/MM/YYYY')"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DeliverySchedule.tsx",
+          "operation": "modify",
+          "description": "Add delivery date display to the delivery schedule UI. Extract the deliveryDate field from the Delivery type (which is already available as Time/bigint from the backend interface). Format the date using JavaScript Date formatting (e.g., new Date(Number(deliveryDate / 1_000_000n)).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })). Display the formatted date prominently alongside the delivery time for each scheduled delivery. Ensure proper handling of the bigint to milliseconds conversion for Time type."
         }
       ]
     }

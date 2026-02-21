@@ -63,12 +63,11 @@ actor {
   };
 
   public query ({ caller }) func getOrderHistory(customerId : Nat) : async [Order] {
-    let orderList : List.List<Order> = List.empty<Order>();
-    for ((_, order) in orders.entries()) {
-      if (order.customerId == customerId) {
-        orderList.add(order);
-      };
-    };
+    let orderList = orders.values().filter(
+      func(order) {
+        order.customerId == customerId
+      }
+    );
     orderList.toArray();
   };
 

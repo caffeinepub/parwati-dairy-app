@@ -1,4 +1,4 @@
-import { Truck, Calendar, Clock, Package, AlertCircle } from 'lucide-react';
+import { Truck, Calendar, Clock, Package, AlertCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useOrderHistory, useDeliverySchedule } from '../hooks/useQueries';
@@ -14,13 +14,18 @@ export default function DeliverySchedule() {
   const { data: orders, isLoading, error } = useOrderHistory(customerId);
 
   const formatDate = (timestamp: bigint) => {
-    const date = new Date(Number(timestamp) / 1000000); // Convert nanoseconds to milliseconds
-    return date.toLocaleDateString('en-IN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    try {
+      // Convert nanoseconds to milliseconds
+      const date = new Date(Number(timestamp / 1_000_000n));
+      return date.toLocaleDateString('en-IN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (e) {
+      return 'Invalid date';
+    }
   };
 
   const formatTime = (timeString: string) => {
@@ -57,9 +62,18 @@ export default function DeliverySchedule() {
           <div className="max-w-4xl mx-auto">
             <Card className="border-destructive">
               <CardContent className="pt-6">
-                <p className="text-destructive text-center">
-                  Error loading delivery schedule. Please try again later.
-                </p>
+                <div className="text-center">
+                  <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+                  <p className="text-destructive font-semibold mb-2">
+                    Error loading delivery schedule
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {error instanceof Error ? error.message : 'Please try again later.'}
+                  </p>
+                  <Button onClick={() => window.location.reload()} variant="outline">
+                    Retry
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -167,7 +181,7 @@ interface DeliveryCardProps {
 }
 
 function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
-  const { data: delivery, isLoading } = useDeliverySchedule(order.id);
+  const { data: delivery, isLoading, error } = useDeliverySchedule(order.id);
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -183,7 +197,7 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
           </Badge>
         </div>
         <CardDescription className="mt-2">
-          {order.product.name} - Quantity: {Number(order.quantity)}
+          {order.product?.name || 'N/A'} - Quantity: {Number(order.quantity)}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -191,6 +205,18 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4 animate-spin" />
             <span className="text-sm">Loading delivery schedule...</span>
+          </div>
+        ) : error ? (
+          <div className="flex items-start gap-2 bg-destructive/10 p-4 rounded-lg border border-destructive/20">
+            <XCircle className="h-5 w-5 text-destructive mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-destructive mb-1">
+                Error Loading Delivery
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Unable to fetch delivery information. Please try again.
+              </p>
+            </div>
           </div>
         ) : delivery ? (
           <div className="space-y-4">

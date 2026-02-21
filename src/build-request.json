@@ -1,37 +1,73 @@
 {
   "kind": "build_request",
-  "title": "Add PhonePe redirect on QR code click",
+  "title": "Fix order history and delivery schedule errors, add delivery date display",
   "projectName": "Parwati Dairy",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-14",
-      "text": "Make the QR code image on the OrderForm page clickable, so that when a user clicks on it, they are redirected to PhonePe for making payment using the displayed QR code",
-      "target": "frontend",
+      "id": "REQ-15",
+      "text": "Debug and fix the errors occurring in the order history feature to ensure it correctly fetches and displays customer order data without crashes or error states",
+      "target": "both",
       "source": {
         "messageIds": [
           "msg-latest"
         ],
         "quotes": [
-          "please add when you click on qr code it will redirect to phonepe for making payment with given qr code"
+          "oder history and delivery scheule is giving an error"
         ]
       },
       "acceptanceCriteria": [
-        "The QR code image on OrderForm.tsx is wrapped in a clickable element (button or link)",
-        "Clicking the QR code opens PhonePe payment interface with the QR code data",
-        "The interaction works on mobile devices where PhonePe app is installed",
-        "Visual feedback (cursor pointer, hover effect) indicates the QR code is clickable"
+        "Order history page loads without errors",
+        "Customer orders are fetched successfully from the backend",
+        "Order history displays all past orders with product, quantity, date, and status"
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Debug and fix the errors occurring in the delivery schedule feature to ensure it correctly fetches and displays delivery information without crashes or error states",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "oder history and delivery scheule is giving an error"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Delivery schedule page loads without errors",
+        "Delivery information is fetched successfully from the backend",
+        "Delivery schedule displays all pending deliveries with order details"
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "text": "Add delivery date field to the delivery schedule display, showing when each order is scheduled for delivery",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "please add delivery date in delivery schedule"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Delivery date is stored in the backend Delivery type",
+        "Delivery date is displayed for each delivery in the delivery schedule",
+        "Date is formatted in a user-friendly format (e.g., 'January 15, 2024' or 'DD/MM/YYYY')"
       ]
     }
   ],
   "constraints": [
-    "Must work with the existing State Bank of India QR code image already displayed on OrderForm page",
-    "Should open PhonePe app if installed on mobile, or PhonePe web interface as fallback"
+    "Maintain single-actor architecture in backend/main.mo",
+    "Do not modify immutable frontend paths (useInternetIdentity.ts, useActor.ts, main.tsx, components/ui)",
+    "Preserve existing WhatsApp integration and PhonePe QR code functionality"
   ],
   "nonGoals": [
-    "Creating a new QR code or changing the QR code image",
-    "Implementing payment processing or verification logic",
-    "Adding payment confirmation or callback handling"
+    "Redesigning the UI layout of order history or delivery schedule pages",
+    "Adding new order statuses beyond placed/delivered/canceled",
+    "Implementing automated delivery date scheduling logic"
   ],
   "imageRequirements": {
     "required": [],

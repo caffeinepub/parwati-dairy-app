@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Make the QR code on the OrderForm page clickable to redirect users to PhonePe for payment.
+**Goal:** Fix errors in order history and delivery schedule features, and add delivery date display to the delivery schedule.
 
 **Planned changes:**
-- Wrap the existing QR code image in a clickable element on the OrderForm page
-- Add click handler to open PhonePe app (on mobile) or PhonePe web interface (fallback)
-- Add visual feedback (pointer cursor, hover effect) to indicate the QR code is clickable
+- Debug and resolve errors preventing order history from loading and displaying customer orders
+- Debug and resolve errors preventing delivery schedule from loading and displaying delivery information
+- Add delivery date field to deliveries in the backend
+- Display delivery date for each order in the delivery schedule interface
 
-**User-visible outcome:** Users can click on the QR code image to be redirected to PhonePe, where they can complete payment using the displayed QR code.
+**User-visible outcome:** Users can successfully view their complete order history and delivery schedule without errors, and see the scheduled delivery date for each pending delivery.
