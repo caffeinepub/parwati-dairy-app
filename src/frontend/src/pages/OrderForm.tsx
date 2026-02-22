@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { ShoppingCart, Send, QrCode } from 'lucide-react';
+import { ShoppingCart, Send, QrCode, Smartphone, IndianRupee } from 'lucide-react';
 import { sendWhatsAppOrder } from '../utils/whatsapp';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 interface OrderFormData {
   name: string;
@@ -11,6 +12,13 @@ interface OrderFormData {
   product: string;
   quantity: string;
 }
+
+// Product prices mapping
+const PRODUCT_PRICES: Record<string, number> = {
+  'Milk': 60,
+  'Paneer': 400,
+  'Ghee': 1500,
+};
 
 export default function OrderForm() {
   const navigate = useNavigate();
@@ -37,6 +45,15 @@ export default function OrderForm() {
     { value: 'Paneer', label: 'Paneer (₹400/Kg)', unit: 'Kg' },
     { value: 'Ghee', label: 'Ghee (₹1500/Kg)', unit: 'Kg' },
   ];
+
+  // Calculate total amount in real-time
+  const totalAmount = useMemo(() => {
+    if (!formData.product || !formData.quantity) return 0;
+    const quantity = parseFloat(formData.quantity);
+    if (isNaN(quantity) || quantity <= 0) return 0;
+    const price = PRODUCT_PRICES[formData.product] || 0;
+    return price * quantity;
+  }, [formData.product, formData.quantity]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<OrderFormData> = {};
@@ -94,16 +111,59 @@ export default function OrderForm() {
     
     if (isMobile) {
       // Try to open PhonePe app using deep link
-      // The phonepe:// scheme will open the PhonePe app if installed
-      window.location.href = 'phonepe://';
+      const phonePeDeepLink = 'phonepe://';
       
-      // Fallback to PhonePe web interface after a short delay if app doesn't open
+      // Create a hidden iframe to attempt opening the app
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = phonePeDeepLink;
+      document.body.appendChild(iframe);
+      
+      // Set a timeout to check if the app opened
+      let appOpened = false;
+      const startTime = Date.now();
+      
+      // If user leaves the page (app opened), mark as successful
+      const visibilityHandler = () => {
+        if (document.hidden) {
+          appOpened = true;
+        }
+      };
+      document.addEventListener('visibilitychange', visibilityHandler);
+      
+      // Check after a delay if app didn't open
       setTimeout(() => {
-        window.open('https://www.phonepe.com/', '_blank');
+        document.removeEventListener('visibilitychange', visibilityHandler);
+        document.body.removeChild(iframe);
+        
+        const timeElapsed = Date.now() - startTime;
+        
+        // If less than 2 seconds passed and page is still visible, app likely didn't open
+        if (!appOpened && timeElapsed < 2000 && !document.hidden) {
+          toast.error('PhonePe app not found', {
+            description: 'Please install PhonePe app or scan the QR code manually from within the PhonePe app.',
+            duration: 5000,
+          });
+        } else if (appOpened || document.hidden) {
+          toast.success('Opening PhonePe...', {
+            description: 'Please complete the payment in the PhonePe app.',
+            duration: 3000,
+          });
+        }
       }, 1500);
+      
+      // Also try direct window.location as fallback
+      setTimeout(() => {
+        if (!appOpened) {
+          window.location.href = phonePeDeepLink;
+        }
+      }, 100);
     } else {
-      // On desktop, open PhonePe web interface
-      window.open('https://www.phonepe.com/', '_blank');
+      // On desktop, show a message that this feature is for mobile
+      toast.info('Mobile feature', {
+        description: 'Please scan this QR code using your PhonePe mobile app to make the payment.',
+        duration: 4000,
+      });
     }
   };
 
@@ -242,46 +302,78 @@ export default function OrderForm() {
                 )}
               </div>
 
-              {/* Payment QR Code Section - State Bank of India */}
+              {/* Total Amount Display */}
+              {totalAmount > 0 && (
+                <div className="bg-primary/10 border-2 border-primary/30 rounded-xl p-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-primary/20 rounded-full">
+                        <IndianRupee className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground mb-1">
+                          Total Amount
+                        </p>
+                        <p className="text-3xl font-bold text-primary">
+                          ₹{totalAmount.toLocaleString('en-IN')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right text-sm text-muted-foreground">
+                      <p>{formData.quantity} {selectedProduct?.unit}</p>
+                      <p>@ ₹{PRODUCT_PRICES[formData.product]}/{selectedProduct?.unit}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Payment QR Code Section */}
               <div className="pt-4 border-t border-border">
                 <div className="text-center mb-4">
                   <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-3">
                     <QrCode className="h-6 w-6 text-primary" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-1">
-                    Scan to Pay
+                    Scan to Pay with PhonePe
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    State Bank of India - Account 2430
+                    Click the QR code to open PhonePe app
                   </p>
                 </div>
                 <div className="flex justify-center mb-4">
                   <button
                     type="button"
                     onClick={handleQRCodeClick}
-                    className="bg-white p-4 rounded-xl shadow-md border-2 border-primary/20 cursor-pointer hover:border-primary/40 hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                    aria-label="Click to open PhonePe for payment"
+                    className="relative bg-white p-4 rounded-xl shadow-md border-2 border-primary/20 cursor-pointer hover:border-primary/40 hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 group"
+                    aria-label="Click to open PhonePe app for payment"
                   >
                     <img
-                      src="/assets/image.png"
-                      alt="State Bank of India Payment QR Code - Account 2430"
+                      src="/assets/generated/payment-qr.dim_400x400.png"
+                      alt="PhonePe Payment QR Code"
                       className="w-56 h-56 md:w-64 md:h-64 object-contain pointer-events-none"
                       onError={(e) => {
                         console.error('QR code image failed to load');
                         e.currentTarget.style.display = 'none';
                       }}
                     />
+                    {/* Mobile indicator overlay */}
+                    <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 rounded-xl transition-colors flex items-center justify-center pointer-events-none">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+                        <Smartphone className="h-4 w-4" />
+                        <span className="text-sm font-medium">Open PhonePe</span>
+                      </div>
+                    </div>
                   </button>
                 </div>
                 <div className="bg-accent/50 rounded-lg p-4 mb-4">
                   <p className="text-sm text-foreground text-center">
                     <strong>Payment Instructions:</strong>
                     <br />
-                    1. Click on the QR code above to open PhonePe
+                    1. Click on the QR code above to open PhonePe app
                     <br />
-                    2. Complete the payment to State Bank of India account 2430
+                    2. Complete the payment using the QR code
                     <br />
-                    3. Click the button below to send your order details
+                    3. After payment, click the button below to send your order details
                   </p>
                 </div>
               </div>

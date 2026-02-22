@@ -10,8 +10,13 @@ export function useOrderHistory(customerId: number) {
     queryKey: ['orderHistory', customerId],
     queryFn: async () => {
       if (!actor) return [];
-      const result = await actor.getOrderHistory(BigInt(customerId));
-      return result || [];
+      try {
+        const result = await actor.getOrderHistory(BigInt(customerId));
+        return result || [];
+      } catch (error) {
+        console.error('Error fetching order history:', error);
+        throw error;
+      }
     },
     enabled: !!actor && !isFetching && customerId > 0,
     retry: 2,
@@ -27,10 +32,15 @@ export function useDeliverySchedule(orderId: bigint) {
     queryKey: ['deliverySchedule', orderId.toString()],
     queryFn: async () => {
       if (!actor) return null;
-      const result = await actor.getDeliverySchedule(orderId);
-      return result || null;
+      try {
+        const result = await actor.getDeliverySchedule(orderId);
+        return result || null;
+      } catch (error) {
+        console.error('Error fetching delivery schedule:', error);
+        throw error;
+      }
     },
-    enabled: !!actor && !isFetching && !!orderId,
+    enabled: !!actor && !isFetching && orderId !== undefined && orderId !== null,
     retry: 1,
     staleTime: 30000, // 30 seconds
   });

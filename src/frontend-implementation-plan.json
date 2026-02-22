@@ -1,63 +1,54 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix order history and delivery schedule errors, add delivery date display",
+  "title": "Implement PhonePe integration, live total calculation, delivery date display, and SMS notifications",
   "requirements": [
     {
-      "id": "REQ-15",
-      "summary": "Debug and fix order history errors to ensure correct fetching and display of customer order data",
+      "id": "REQ-26",
+      "summary": "Fix PhonePe QR code click handler to use proper mobile deep link URL",
       "acceptanceCriteria": [
-        "Order history page loads without errors",
-        "Customer orders are fetched successfully from the backend",
-        "Order history displays all past orders with product, quantity, date, and status"
+        "Clicking the QR code image on OrderForm opens the PhonePe app on mobile devices",
+        "The deep link uses the correct phonepe:// URL scheme",
+        "Falls back gracefully if PhonePe app is not installed"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/OrderHistory.tsx",
+          "path": "frontend/src/pages/OrderForm.tsx",
           "operation": "modify",
-          "description": "Fix the order history implementation to properly handle the backend response structure. Update the component to correctly extract and display order data including product details (name, price), quantity, order date, and status. Ensure proper error handling for null/undefined values and add fallback UI for empty order lists. Verify the useOrderHistory hook is called with the correct customerId parameter."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Fix the useOrderHistory hook to properly handle the backend getOrderHistory response. Ensure the query is enabled only when both actor and customerId are available. Add proper error handling and retry logic. Verify the customerId parameter is correctly typed as bigint and passed to the backend function."
+          "description": "Update the PhonePe QR code click handler to use the phonepe:// deep link URL scheme instead of the current implementation. Implement a click handler on the QR code image that attempts to open phonepe://pay or phonepe://upi with appropriate parameters. Add fallback logic that detects if the PhonePe app launch fails (e.g., using a timeout or window focus detection) and shows a helpful message to the user. Reference the generated QR code image at frontend/public/assets/generated/payment-qr.dim_400x400.png."
         }
       ]
     },
     {
-      "id": "REQ-16",
-      "summary": "Debug and fix delivery schedule errors to ensure correct fetching and display of delivery information",
+      "id": "REQ-27",
+      "summary": "Add real-time total amount calculation on OrderForm page",
       "acceptanceCriteria": [
-        "Delivery schedule page loads without errors",
-        "Delivery information is fetched successfully from the backend",
-        "Delivery schedule displays all pending deliveries with order details"
+        "Total amount updates in real-time as quantity changes",
+        "Calculation uses correct product rates: Milk ₹60/L, Paneer ₹400/Kg, Ghee ₹1500/Kg",
+        "Total amount is displayed prominently with rupee symbol formatting",
+        "Total appears before the WhatsApp submit button"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/OrderForm.tsx",
+          "operation": "modify",
+          "description": "Add state management for calculating and displaying the total amount dynamically. Create a computed value that multiplies the selected product's price (Milk: 60, Paneer: 400, Ghee: 1500) by the quantity input value. Display the calculated total amount in a prominent position above the WhatsApp submit button, formatted with the rupee symbol (₹) and proper number formatting. Use a useEffect or direct calculation in the render to ensure the total updates immediately when quantity or product changes. Style the total amount display to be visually prominent using the warm color scheme from the design system."
+        }
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "summary": "Display delivery date field on DeliverySchedule page for each order",
+      "acceptanceCriteria": [
+        "Delivery date is visible for each order in the delivery schedule",
+        "Date is formatted in a user-friendly way",
+        "Handles cases where delivery date may not be set"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/DeliverySchedule.tsx",
           "operation": "modify",
-          "description": "Fix the delivery schedule implementation to properly handle the backend response. The current approach fetches orders with 'placed' status and then attempts to fetch delivery details for each order. Update to handle cases where getDeliverySchedule returns null (no delivery scheduled yet). Add proper error boundaries and loading states. Ensure the component correctly displays delivery time and handles empty delivery lists gracefully."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Fix the useDeliverySchedule hook to properly handle the backend getDeliverySchedule response which returns Delivery | null. Add proper null checking and error handling. Ensure the orderId parameter is correctly typed as bigint. Consider adding a composite query that fetches both order details and delivery schedule together to avoid multiple backend calls."
-        }
-      ]
-    },
-    {
-      "id": "REQ-17",
-      "summary": "Add delivery date field to the delivery schedule display with user-friendly formatting",
-      "acceptanceCriteria": [
-        "Delivery date is stored in the backend Delivery type",
-        "Delivery date is displayed for each delivery in the delivery schedule",
-        "Date is formatted in a user-friendly format (e.g., 'January 15, 2024' or 'DD/MM/YYYY')"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/DeliverySchedule.tsx",
-          "operation": "modify",
-          "description": "Add delivery date display to the delivery schedule UI. Extract the deliveryDate field from the Delivery type (which is already available as Time/bigint from the backend interface). Format the date using JavaScript Date formatting (e.g., new Date(Number(deliveryDate / 1_000_000n)).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })). Display the formatted date prominently alongside the delivery time for each scheduled delivery. Ensure proper handling of the bigint to milliseconds conversion for Time type."
+          "description": "Modify the order display to show the deliveryDate field from each order record. Format the deliveryDate timestamp using the same date formatting pattern used for orderDate in the component (toLocaleDateString with appropriate locale). Add conditional rendering to handle cases where deliveryDate is undefined or null, displaying a placeholder message like 'Not scheduled' or 'Pending' in those cases. Ensure the delivery date is prominently displayed alongside the existing order information in the delivery schedule list."
         }
       ]
     }

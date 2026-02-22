@@ -1,44 +1,40 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T11:36:55.674Z",
+  "generatedAt": "2026-02-22T02:22:23.754Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
+    "total": 4,
     "implemented": 3,
     "items": [
       {
-        "id": "REQ-15",
-        "summary": "Debug and fix the errors occurring in the order history feature to ensure it correctly fetches and displays customer order data without crashes or error states",
+        "id": "REQ-26",
+        "summary": "Fix the PhonePe QR code click handler on the OrderForm page to correctly open the PhonePe mobile application using the proper deep link URL format (phonepe://) that works on mobile devices",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/OrderHistory.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/OrderForm.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/OrderHistory.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/OrderForm.tsx"
         ]
       },
       {
-        "id": "REQ-16",
-        "summary": "Debug and fix the errors occurring in the delivery schedule feature to ensure it correctly fetches and displays delivery information without crashes or error states",
+        "id": "REQ-27",
+        "summary": "Add real-time total amount calculation on the OrderForm page that dynamically multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity value and displays the calculated total amount prominently above the submit button",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/DeliverySchedule.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/OrderForm.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/DeliverySchedule.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/OrderForm.tsx"
         ]
       },
       {
-        "id": "REQ-17",
-        "summary": "Add delivery date field to the delivery schedule display, showing when each order is scheduled for delivery",
+        "id": "REQ-28",
+        "summary": "Display the delivery date field on the DeliverySchedule page for each order, showing when that specific order is scheduled for delivery with proper date formatting",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/pages/DeliverySchedule.tsx"
@@ -46,18 +42,31 @@
         "matchedFiles": [
           "frontend/src/pages/DeliverySchedule.tsx"
         ]
+      },
+      {
+        "id": "REQ-29",
+        "summary": "Implement SMS notification functionality that automatically sends an order confirmation message to the customer's mobile phone number when an order is successfully placed through the OrderForm",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
+    "backend/http-outcalls/outcall.mo",
     "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
+    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "frontend/src/pages/DeliverySchedule.tsx",
-    "frontend/src/pages/OrderHistory.tsx",
+    "frontend/src/pages/OrderForm.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

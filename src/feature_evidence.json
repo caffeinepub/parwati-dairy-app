@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-debug-and-fix-the-errors-occurring-in-the-order-history-feature-to-ensure-it-correctly-fetches-and-displays-customer-order-data-without-crashes-or-error-states",
-      "featureTitle": "Debug and fix the errors occurring in the order history feature to ensure it correctly fetches and displays customer order data without crashes or error states",
+      "featureId": "feature-fix-the-phonepe-qr-code-click-handler-on-the-orderform-page-to-correctly-open-the-phonepe-mobile-application-using-the-proper-deep-link-url-format-phonepe-that-works-on-mobile-devices",
+      "featureTitle": "Fix the PhonePe QR code click handler on the OrderForm page to correctly open the PhonePe mobile application using the proper deep link URL format (phonepe://) that works on mobile devices",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/OrderHistory.tsx"
+        "frontend/src/pages/OrderForm.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -15,18 +14,39 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "qr-code@1.0.0",
-        "camera@1.0.0"
+        "camera@1.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-15"
+        "REQ-26"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-debug-and-fix-the-errors-occurring-in-the-delivery-schedule-feature-to-ensure-it-correctly-fetches-and-displays-delivery-information-without-crashes-or-error-states",
-      "featureTitle": "Debug and fix the errors occurring in the delivery schedule feature to ensure it correctly fetches and displays delivery information without crashes or error states",
+      "featureId": "feature-add-real-time-total-amount-calculation-on-the-orderform-page-that-dynamically-multiplies-the-selected-product-price-milk-60-litre-paneer-400-kg-ghee-1500-kg-by-the-entered-quantity-value-and-displays-the-calculated-total-amount-prominently-above-the-submit-button",
+      "featureTitle": "Add real-time total amount calculation on the OrderForm page that dynamically multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity value and displays the calculated total amount prominently above the submit button",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/OrderForm.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-27"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-the-delivery-date-field-on-the-deliveryschedule-page-for-each-order-showing-when-that-specific-order-is-scheduled-for-delivery-with-proper-date-formatting",
+      "featureTitle": "Display the delivery date field on the DeliverySchedule page for each order, showing when that specific order is scheduled for delivery with proper date formatting",
+      "files": [
         "frontend/src/pages/DeliverySchedule.tsx"
       ],
       "components": [
@@ -36,30 +56,11 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "qr-code@1.0.0",
-        "camera@1.0.0"
+        "camera@1.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-16"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-delivery-date-field-to-the-delivery-schedule-display-showing-when-each-order-is-scheduled-for-delivery",
-      "featureTitle": "Add delivery date field to the delivery schedule display, showing when each order is scheduled for delivery",
-      "files": [
-        "frontend/src/pages/DeliverySchedule.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "qr-code@1.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-17"
+        "REQ-28"
       ],
       "confidence": "high"
     }

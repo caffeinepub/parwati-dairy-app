@@ -23,18 +23,43 @@ export const Product = IDL.Record({
 export const Order = IDL.Record({
   'id' : IDL.Nat,
   'status' : IDL.Text,
+  'deliveryDate' : IDL.Opt(Time),
   'orderDate' : Time,
   'quantity' : IDL.Nat,
   'customerId' : IDL.Nat,
+  'phoneNumber' : IDL.Text,
   'product' : Product,
+});
+export const http_header = IDL.Record({
+  'value' : IDL.Text,
+  'name' : IDL.Text,
+});
+export const http_request_result = IDL.Record({
+  'status' : IDL.Nat,
+  'body' : IDL.Vec(IDL.Nat8),
+  'headers' : IDL.Vec(http_header),
+});
+export const TransformationInput = IDL.Record({
+  'context' : IDL.Vec(IDL.Nat8),
+  'response' : http_request_result,
+});
+export const TransformationOutput = IDL.Record({
+  'status' : IDL.Nat,
+  'body' : IDL.Vec(IDL.Nat8),
+  'headers' : IDL.Vec(http_header),
 });
 
 export const idlService = IDL.Service({
   'cancelOrder' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   'getDeliverySchedule' : IDL.Func([IDL.Nat], [IDL.Opt(Delivery)], ['query']),
   'getOrderHistory' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
-  'placeOrder' : IDL.Func([IDL.Nat, Product, IDL.Nat], [IDL.Nat], []),
+  'placeOrder' : IDL.Func([IDL.Nat, Product, IDL.Nat, IDL.Text], [IDL.Nat], []),
   'scheduleDelivery' : IDL.Func([IDL.Nat, Time, IDL.Text], [IDL.Bool], []),
+  'transform' : IDL.Func(
+      [TransformationInput],
+      [TransformationOutput],
+      ['query'],
+    ),
   'updateOrderStatus' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Bool], []),
 });
 
@@ -56,18 +81,44 @@ export const idlFactory = ({ IDL }) => {
   const Order = IDL.Record({
     'id' : IDL.Nat,
     'status' : IDL.Text,
+    'deliveryDate' : IDL.Opt(Time),
     'orderDate' : Time,
     'quantity' : IDL.Nat,
     'customerId' : IDL.Nat,
+    'phoneNumber' : IDL.Text,
     'product' : Product,
+  });
+  const http_header = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
+  const http_request_result = IDL.Record({
+    'status' : IDL.Nat,
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(http_header),
+  });
+  const TransformationInput = IDL.Record({
+    'context' : IDL.Vec(IDL.Nat8),
+    'response' : http_request_result,
+  });
+  const TransformationOutput = IDL.Record({
+    'status' : IDL.Nat,
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(http_header),
   });
   
   return IDL.Service({
     'cancelOrder' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'getDeliverySchedule' : IDL.Func([IDL.Nat], [IDL.Opt(Delivery)], ['query']),
     'getOrderHistory' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
-    'placeOrder' : IDL.Func([IDL.Nat, Product, IDL.Nat], [IDL.Nat], []),
+    'placeOrder' : IDL.Func(
+        [IDL.Nat, Product, IDL.Nat, IDL.Text],
+        [IDL.Nat],
+        [],
+      ),
     'scheduleDelivery' : IDL.Func([IDL.Nat, Time, IDL.Text], [IDL.Bool], []),
+    'transform' : IDL.Func(
+        [TransformationInput],
+        [TransformationOutput],
+        ['query'],
+      ),
     'updateOrderStatus' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Bool], []),
   });
 };

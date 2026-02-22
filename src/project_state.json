@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
+  "projectStateVersion": 23,
   "summary": "Parwati Dairy mobile app for ordering milk, paneer, and ghee with WhatsApp integration",
   "architectural_notes": [
     "Mobile-first responsive design for dairy product ordering",
@@ -8,11 +8,14 @@
     "Hindi/English bilingual support for branding",
     "QR code payment integration for order transactions",
     "Customer order history database and tracking system",
-    "Delivery scheduling system for order management"
+    "Delivery scheduling system for order management",
+    "SMS notification system for order confirmations"
   ],
   "known_issues": [
-    "Order history feature is throwing errors",
-    "Delivery schedule feature is throwing errors"
+    "Order history feature is currently displaying errors",
+    "Delivery schedule feature is currently displaying errors",
+    "QR code click not opening PhonePe app on mobile devices",
+    "Total amount not calculated and displayed based on quantity and rate"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -151,6 +154,94 @@
         "REQ-17"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-payment-qr-code-image-on-the-orderform-page-with-the-newly-uploaded-qr-code-image",
+      "title": "Replace the existing payment QR code image on the OrderForm page with the newly uploaded QR code image",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-when-the-qr-code-image-is-clicked-open-the-phonepe-mobile-application-to-process-payment-using-the-displayed-qr-code",
+      "title": "When the QR code image is clicked, open the PhonePe mobile application to process payment using the displayed QR code",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-errors-occurring-in-the-orderhistory-page-to-ensure-it-correctly-fetches-and-displays-customer-order-data-without-crashes-or-error-states",
+      "title": "Debug and fix the errors occurring in the OrderHistory page to ensure it correctly fetches and displays customer order data without crashes or error states",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-errors-occurring-in-the-deliveryschedule-page-to-ensure-it-correctly-fetches-and-displays-delivery-information-without-crashes-or-error-states",
+      "title": "Debug and fix the errors occurring in the DeliverySchedule page to ensure it correctly fetches and displays delivery information without crashes or error states",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-delivery-date-field-to-the-deliveryschedule-page-display-showing-when-each-order-is-scheduled-for-delivery",
+      "title": "Add delivery date field to the DeliverySchedule page display, showing when each order is scheduled for delivery",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-qr-code-click-handler-on-the-orderform-page-to-properly-open-the-phonepe-mobile-application-on-mobile-devices-using-the-correct-phonepe-upi-deep-link-scheme-phonepe",
+      "title": "Fix the QR code click handler on the OrderForm page to properly open the PhonePe mobile application on mobile devices using the correct PhonePe UPI deep link scheme (phonepe://)",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-real-time-total-amount-calculation-on-the-orderform-page-that-multiplies-the-selected-product-price-milk-60-litre-paneer-400-kg-ghee-1500-kg-by-the-entered-quantity-and-displays-the-total-amount-prominently-before-the-submit-button",
+      "title": "Add real-time total amount calculation on the OrderForm page that multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity and displays the total amount prominently before the submit button",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-sms-notification-functionality-that-sends-a-confirmation-message-to-the-customer-s-mobile-number-when-an-order-is-successfully-placed",
+      "title": "Implement SMS notification functionality that sends a confirmation message to the customer's mobile number when an order is successfully placed",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-phonepe-qr-code-click-handler-on-the-orderform-page-to-correctly-open-the-phonepe-mobile-application-using-the-proper-deep-link-url-format-phonepe-that-works-on-mobile-devices",
+      "title": "Fix the PhonePe QR code click handler on the OrderForm page to correctly open the PhonePe mobile application using the proper deep link URL format (phonepe://) that works on mobile devices",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-real-time-total-amount-calculation-on-the-orderform-page-that-dynamically-multiplies-the-selected-product-price-milk-60-litre-paneer-400-kg-ghee-1500-kg-by-the-entered-quantity-value-and-displays-the-calculated-total-amount-prominently-above-the-submit-button",
+      "title": "Add real-time total amount calculation on the OrderForm page that dynamically multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity value and displays the calculated total amount prominently above the submit button",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-the-delivery-date-field-on-the-deliveryschedule-page-for-each-order-showing-when-that-specific-order-is-scheduled-for-delivery-with-proper-date-formatting",
+      "title": "Display the delivery date field on the DeliverySchedule page for each order, showing when that specific order is scheduled for delivery with proper date formatting",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -212,6 +303,32 @@
       "id": "AR-10",
       "summary": "Add delivery date display in delivery schedule",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Fix QR code click to open PhonePe app on mobile",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Display total amount calculation based on quantity and product rate",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Send SMS notification to customer mobile number upon order confirmation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Implement SMS notification functionality that automatically sends an order confirmation message to the customer's mobile phone number when an order is successfully placed through the OrderForm",
+      "reqIds": [
+        "REQ-29"
+      ],
       "status": "pending"
     }
   ],

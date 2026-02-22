@@ -89,13 +89,34 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
+export interface TransformationOutput {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
 export type Time = bigint;
+export interface TransformationInput {
+    context: Uint8Array;
+    response: http_request_result;
+}
+export interface Delivery {
+    deliveryDate: Time;
+    deliveryTime: string;
+    orderId: bigint;
+}
 export interface Order {
     id: bigint;
     status: string;
+    deliveryDate?: Time;
     orderDate: Time;
     quantity: bigint;
     customerId: bigint;
+    phoneNumber: string;
     product: Product;
 }
 export interface Product {
@@ -104,20 +125,20 @@ export interface Product {
     quantity: bigint;
     price: bigint;
 }
-export interface Delivery {
-    deliveryDate: Time;
-    deliveryTime: string;
-    orderId: bigint;
+export interface http_header {
+    value: string;
+    name: string;
 }
 export interface backendInterface {
     cancelOrder(orderId: bigint): Promise<boolean>;
     getDeliverySchedule(orderId: bigint): Promise<Delivery | null>;
     getOrderHistory(customerId: bigint): Promise<Array<Order>>;
-    placeOrder(customerId: bigint, product: Product, quantity: bigint): Promise<bigint>;
+    placeOrder(customerId: bigint, product: Product, quantity: bigint, phoneNumber: string): Promise<bigint>;
     scheduleDelivery(orderId: bigint, deliveryDate: Time, deliveryTime: string): Promise<boolean>;
+    transform(input: TransformationInput): Promise<TransformationOutput>;
     updateOrderStatus(orderId: bigint, newStatus: string): Promise<boolean>;
 }
-import type { Delivery as _Delivery } from "./declarations/backend.did.d.ts";
+import type { Delivery as _Delivery, Order as _Order, Product as _Product, Time as _Time } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async cancelOrder(arg0: bigint): Promise<boolean> {
@@ -152,27 +173,27 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getOrderHistory(arg0);
-                return result;
+                return from_candid_vec_n2(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getOrderHistory(arg0);
-            return result;
+            return from_candid_vec_n2(this._uploadFile, this._downloadFile, result);
         }
     }
-    async placeOrder(arg0: bigint, arg1: Product, arg2: bigint): Promise<bigint> {
+    async placeOrder(arg0: bigint, arg1: Product, arg2: bigint, arg3: string): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.placeOrder(arg0, arg1, arg2);
+                const result = await this.actor.placeOrder(arg0, arg1, arg2, arg3);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.placeOrder(arg0, arg1, arg2);
+            const result = await this.actor.placeOrder(arg0, arg1, arg2, arg3);
             return result;
         }
     }
@@ -187,6 +208,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.scheduleDelivery(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async transform(arg0: TransformationInput): Promise<TransformationOutput> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.transform(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.transform(arg0);
             return result;
         }
     }
@@ -205,8 +240,47 @@ export class Backend implements backendInterface {
         }
     }
 }
+function from_candid_Order_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Order): Order {
+    return from_candid_record_n4(_uploadFile, _downloadFile, value);
+}
 function from_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Delivery]): Delivery | null {
     return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Time]): Time | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_record_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: bigint;
+    status: string;
+    deliveryDate: [] | [_Time];
+    orderDate: _Time;
+    quantity: bigint;
+    customerId: bigint;
+    phoneNumber: string;
+    product: _Product;
+}): {
+    id: bigint;
+    status: string;
+    deliveryDate?: Time;
+    orderDate: Time;
+    quantity: bigint;
+    customerId: bigint;
+    phoneNumber: string;
+    product: Product;
+} {
+    return {
+        id: value.id,
+        status: value.status,
+        deliveryDate: record_opt_to_undefined(from_candid_opt_n5(_uploadFile, _downloadFile, value.deliveryDate)),
+        orderDate: value.orderDate,
+        quantity: value.quantity,
+        customerId: value.customerId,
+        phoneNumber: value.phoneNumber,
+        product: value.product
+    };
+}
+function from_candid_vec_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Order>): Array<Order> {
+    return value.map((x)=>from_candid_Order_n3(_uploadFile, _downloadFile, x));
 }
 export interface CreateActorOptions {
     agent?: Agent;

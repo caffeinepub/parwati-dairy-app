@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix errors in order history and delivery schedule features, and add delivery date display to the delivery schedule.
+**Goal:** Enable PhonePe deep linking, live order total calculation, delivery date visibility, and automated SMS order confirmations.
 
 **Planned changes:**
-- Debug and resolve errors preventing order history from loading and displaying customer orders
-- Debug and resolve errors preventing delivery schedule from loading and displaying delivery information
-- Add delivery date field to deliveries in the backend
-- Display delivery date for each order in the delivery schedule interface
+- Fix PhonePe QR code to open PhonePe app on mobile using phonepe:// deep link
+- Add real-time total amount calculation on OrderForm (quantity × product rate)
+- Display delivery date for each order on DeliverySchedule page
+- Implement backend SMS notification system to send order confirmations to customer mobile numbers
 
-**User-visible outcome:** Users can successfully view their complete order history and delivery schedule without errors, and see the scheduled delivery date for each pending delivery.
+**User-visible outcome:** Customers can tap the QR code to launch PhonePe directly, see their order total update as they enter quantity, view delivery dates in their schedule, and receive SMS confirmations after placing orders.

@@ -1,6 +1,7 @@
 import { Truck, Calendar, Clock, Package, AlertCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useOrderHistory, useDeliverySchedule } from '../hooks/useQueries';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ export default function DeliverySchedule() {
         day: 'numeric',
       });
     } catch (e) {
+      console.error('Error formatting date:', e);
       return 'Invalid date';
     }
   };
@@ -48,6 +50,21 @@ export default function DeliverySchedule() {
                 Delivery Schedule
               </h1>
               <p className="text-lg text-muted-foreground">Loading delivery information...</p>
+            </div>
+            <div className="space-y-4">
+              {[1, 2].map((i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-4 w-48 mt-2" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <Skeleton className="h-20 w-full" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </div>
@@ -202,9 +219,8 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Clock className="h-4 w-4 animate-spin" />
-            <span className="text-sm">Loading delivery schedule...</span>
+          <div className="space-y-3">
+            <Skeleton className="h-20 w-full" />
           </div>
         ) : error ? (
           <div className="flex items-start gap-2 bg-destructive/10 p-4 rounded-lg border border-destructive/20">
@@ -240,9 +256,32 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t border-border">
-              <Truck className="h-4 w-4" />
-              <span>Your order will be delivered fresh on the scheduled date</span>
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">Order Date:</strong> {formatDate(order.orderDate)}
+              </p>
+              {order.deliveryDate && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  <strong className="text-foreground">Scheduled Delivery:</strong> {formatDate(order.deliveryDate)}
+                </p>
+              )}
+            </div>
+          </div>
+        ) : order.deliveryDate ? (
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 bg-primary/5 p-4 rounded-lg">
+              <Calendar className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Scheduled Delivery Date</p>
+                <p className="font-semibold text-foreground">
+                  {formatDate(order.deliveryDate)}
+                </p>
+              </div>
+            </div>
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">Order Date:</strong> {formatDate(order.orderDate)}
+              </p>
             </div>
           </div>
         ) : (
@@ -253,7 +292,10 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
                 Delivery Not Scheduled Yet
               </p>
               <p className="text-sm text-muted-foreground">
-                We'll schedule your delivery soon and notify you via WhatsApp
+                Your delivery will be scheduled soon. We'll update you once it's confirmed.
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                <strong className="text-foreground">Order Date:</strong> {formatDate(order.orderDate)}
               </p>
             </div>
           </div>

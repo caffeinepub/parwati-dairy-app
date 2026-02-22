@@ -18,9 +18,11 @@ export interface Delivery {
 export interface Order {
   'id' : bigint,
   'status' : string,
+  'deliveryDate' : [] | [Time],
   'orderDate' : Time,
   'quantity' : bigint,
   'customerId' : bigint,
+  'phoneNumber' : string,
   'product' : Product,
 }
 export interface Product {
@@ -30,12 +32,28 @@ export interface Product {
   'price' : bigint,
 }
 export type Time = bigint;
+export interface TransformationInput {
+  'context' : Uint8Array,
+  'response' : http_request_result,
+}
+export interface TransformationOutput {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
+export interface http_header { 'value' : string, 'name' : string }
+export interface http_request_result {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export interface _SERVICE {
   'cancelOrder' : ActorMethod<[bigint], boolean>,
   'getDeliverySchedule' : ActorMethod<[bigint], [] | [Delivery]>,
   'getOrderHistory' : ActorMethod<[bigint], Array<Order>>,
-  'placeOrder' : ActorMethod<[bigint, Product, bigint], bigint>,
+  'placeOrder' : ActorMethod<[bigint, Product, bigint, string], bigint>,
   'scheduleDelivery' : ActorMethod<[bigint, Time, string], boolean>,
+  'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateOrderStatus' : ActorMethod<[bigint, string], boolean>,
 }
 export declare const idlService: IDL.ServiceClass;

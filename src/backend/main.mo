@@ -3,7 +3,10 @@ import Map "mo:core/Map";
 import Nat "mo:core/Nat";
 import List "mo:core/List";
 import Iter "mo:core/Iter";
+import OutCall "http-outcalls/outcall";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   public type Product = {
     id : Nat;
@@ -19,6 +22,8 @@ actor {
     quantity : Nat;
     orderDate : Time.Time;
     status : Text;
+    deliveryDate : ?Time.Time;
+    phoneNumber : Text;
   };
 
   public type Delivery = {
@@ -31,7 +36,18 @@ actor {
   let deliveries = Map.empty<Nat, Delivery>();
   var nextOrderId = 0;
 
-  public shared ({ caller }) func placeOrder(customerId : Nat, product : Product, quantity : Nat) : async Nat {
+  public query func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
+    OutCall.transform(input);
+  };
+
+  func sendOrderConfirmationSms(phoneNumber : Text, productName : Text, quantity : Nat, totalPrice : Nat, orderId : Nat) : async () {
+    let message = "Thank you for your order! \nOrder ID: " # orderId.toText() # "\nProduct: " # productName # "\nQuantity: " # quantity.toText() # "\nTotal Price: $" # totalPrice.toText();
+    let encodedMessage : Text = message;
+    let smsGatewayUrl = "https://api.smsprovider.com/send?to=" # phoneNumber # "&message=" # encodedMessage;
+    let _ = await OutCall.httpGetRequest(smsGatewayUrl, [], transform);
+  };
+
+  public shared ({ caller }) func placeOrder(customerId : Nat, product : Product, quantity : Nat, phoneNumber : Text) : async Nat {
     let orderId = nextOrderId;
     let newOrder : Order = {
       id = orderId;
@@ -40,10 +56,16 @@ actor {
       quantity;
       orderDate = Time.now();
       status = "Placed";
+      deliveryDate = null;
+      phoneNumber;
     };
 
     orders.add(orderId, newOrder);
     nextOrderId += 1;
+
+    let totalPrice = product.price * quantity;
+    await sendOrderConfirmationSms(phoneNumber, product.name, quantity, totalPrice, orderId);
+
     orderId;
   };
 
@@ -57,6 +79,9 @@ actor {
           deliveryTime;
         };
         deliveries.add(orderId, newDelivery);
+
+        let updatedOrder = { order with deliveryDate = ?deliveryDate };
+        orders.add(orderId, updatedOrder);
         true;
       };
     };
@@ -65,7 +90,7 @@ actor {
   public query ({ caller }) func getOrderHistory(customerId : Nat) : async [Order] {
     let orderList = orders.values().filter(
       func(order) {
-        order.customerId == customerId
+        order.customerId == customerId;
       }
     );
     orderList.toArray();

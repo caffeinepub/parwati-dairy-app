@@ -1,6 +1,7 @@
 import { Package, Calendar, CheckCircle, Clock, XCircle, Truck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useOrderHistory, useDeliverySchedule } from '../hooks/useQueries';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ export default function OrderHistory() {
         day: 'numeric',
       });
     } catch (e) {
+      console.error('Error formatting date:', e);
       return 'Invalid date';
     }
   };
@@ -66,6 +68,21 @@ export default function OrderHistory() {
                 Order History
               </h1>
               <p className="text-lg text-muted-foreground">Loading your orders...</p>
+            </div>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <Skeleton className="h-6 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-3/4" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </div>
@@ -175,7 +192,7 @@ interface OrderCardProps {
 }
 
 function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: OrderCardProps) {
-  const { data: delivery } = useDeliverySchedule(order.id);
+  const { data: delivery, isLoading: deliveryLoading } = useDeliverySchedule(order.id);
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -216,19 +233,38 @@ function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: Order
           </div>
 
           {/* Delivery Schedule Info */}
-          {delivery && order.status.toLowerCase() === 'placed' && (
+          {order.status.toLowerCase() === 'placed' && (
             <div className="mt-4 pt-4 border-t border-border">
-              <div className="flex items-start gap-2 bg-primary/5 p-3 rounded-lg">
-                <Truck className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-foreground mb-1">
-                    Scheduled Delivery
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatDate(delivery.deliveryDate)} at {delivery.deliveryTime}
-                  </p>
+              {deliveryLoading ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Clock className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">Loading delivery info...</span>
                 </div>
-              </div>
+              ) : delivery ? (
+                <div className="flex items-start gap-2 bg-primary/5 p-3 rounded-lg">
+                  <Truck className="h-5 w-5 text-primary mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-foreground mb-1">
+                      Scheduled Delivery
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(delivery.deliveryDate)} at {delivery.deliveryTime}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2 bg-muted/50 p-3 rounded-lg">
+                  <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-foreground mb-1">
+                      Delivery Not Scheduled
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Your delivery will be scheduled soon
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
