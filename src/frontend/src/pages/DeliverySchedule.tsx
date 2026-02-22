@@ -42,26 +42,23 @@ export default function DeliverySchedule() {
       <div className="min-h-[calc(100vh-8rem)] py-12 md:py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
+            {/* Header Skeleton */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full mb-4">
-                <Truck className="h-8 w-8 text-primary animate-pulse" />
-              </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                Delivery Schedule
-              </h1>
-              <p className="text-lg text-muted-foreground">Loading delivery information...</p>
+              <Skeleton className="h-16 w-16 rounded-full mx-auto mb-4" />
+              <Skeleton className="h-10 w-64 mx-auto mb-2" />
+              <Skeleton className="h-6 w-96 mx-auto" />
             </div>
+
+            {/* Cards Skeleton */}
             <div className="space-y-4">
-              {[1, 2].map((i) => (
+              {[1, 2, 3].map((i) => (
                 <Card key={i}>
                   <CardHeader>
-                    <Skeleton className="h-6 w-32" />
-                    <Skeleton className="h-4 w-48 mt-2" />
+                    <Skeleton className="h-6 w-48 mb-2" />
+                    <Skeleton className="h-4 w-32" />
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
-                      <Skeleton className="h-20 w-full" />
-                    </div>
+                    <Skeleton className="h-20 w-full" />
                   </CardContent>
                 </Card>
               ))}
@@ -78,19 +75,23 @@ export default function DeliverySchedule() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <Card className="border-destructive">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-                  <p className="text-destructive font-semibold mb-2">
-                    Error loading delivery schedule
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {error instanceof Error ? error.message : 'Please try again later.'}
-                  </p>
-                  <Button onClick={() => window.location.reload()} variant="outline">
-                    Retry
-                  </Button>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-destructive/10 rounded-full">
+                    <XCircle className="h-6 w-6 text-destructive" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-destructive">Error Loading Schedule</CardTitle>
+                    <CardDescription>
+                      Unable to fetch your delivery schedule. Please try again later.
+                    </CardDescription>
+                  </div>
                 </div>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={() => window.location.reload()} variant="outline">
+                  Retry
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -116,74 +117,72 @@ export default function DeliverySchedule() {
             </p>
           </div>
 
-          {/* Delivery Schedule List */}
+          {/* Delivery Schedule Cards */}
           {pendingOrders.length === 0 ? (
             <Card>
-              <CardContent className="pt-12 pb-12 text-center">
-                <Truck className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">
-                  No Pending Deliveries
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  You don't have any pending deliveries at the moment.
-                </p>
-                <Button onClick={() => navigate({ to: '/order' })}>
-                  Place New Order
-                </Button>
+              <CardContent className="py-12">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center p-4 bg-muted rounded-full mb-4">
+                    <Package className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">
+                    No Pending Deliveries
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    You don't have any scheduled deliveries at the moment.
+                  </p>
+                  <Button onClick={() => navigate({ to: '/products' })}>
+                    Browse Products
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-4">
               {pendingOrders.map((order) => (
-                <DeliveryCard
-                  key={Number(order.id)}
-                  order={order}
-                  formatDate={formatDate}
-                  formatTime={formatTime}
-                />
+                <DeliveryCard key={order.id} order={order} formatDate={formatDate} formatTime={formatTime} />
               ))}
             </div>
           )}
 
-          {/* Info Card */}
-          <Card className="mt-8 bg-primary/5 border-primary/20">
+          {/* Delivery Guidelines */}
+          <Card className="mt-8 bg-accent/50">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2">
                 <AlertCircle className="h-5 w-5 text-primary" />
-                Delivery Information
+                Delivery Guidelines
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span>Deliveries are made between 6 AM to 10 AM for morning orders</span>
+                  <span className="text-primary mt-1">•</span>
+                  <span>Please ensure someone is available at the delivery address during the scheduled time.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span>Please ensure someone is available to receive the delivery</span>
+                  <span className="text-primary mt-1">•</span>
+                  <span>Our delivery personnel will contact you 30 minutes before arrival.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span>Contact us on WhatsApp if you need to reschedule</span>
+                  <span className="text-primary mt-1">•</span>
+                  <span>For any changes to your delivery schedule, please contact us at 8553965714.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>All dairy products should be refrigerated immediately upon delivery.</span>
                 </li>
               </ul>
             </CardContent>
           </Card>
 
-          {/* Navigation Links */}
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              variant="outline"
+          {/* Back to Orders */}
+          <div className="mt-6 text-center">
+            <button
               onClick={() => navigate({ to: '/order-history' })}
+              className="text-primary hover:underline font-medium"
             >
-              <Package className="h-4 w-4 mr-2" />
-              View Order History
-            </Button>
-            <Button onClick={() => navigate({ to: '/contact' })}>
-              <Clock className="h-4 w-4 mr-2" />
-              Contact Support
-            </Button>
+              ← Back to Order History
+            </button>
           </div>
         </div>
       </div>
@@ -198,108 +197,135 @@ interface DeliveryCardProps {
 }
 
 function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
-  const { data: delivery, isLoading, error } = useDeliverySchedule(order.id);
+  const { data: delivery, isLoading: deliveryLoading } = useDeliverySchedule(order.id);
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Package className="h-5 w-5 text-primary" />
-            Order #{Number(order.id)}
-          </CardTitle>
-          <Badge variant="default" className="flex items-center gap-1 w-fit">
-            <Clock className="h-4 w-4" />
-            Pending
+        <div className="flex items-start justify-between">
+          <div>
+            <CardTitle className="text-xl">
+              Order #{order.id.toString()}
+            </CardTitle>
+            <CardDescription>
+              {order.product.name} - {order.quantity.toString()} {order.product.name === 'Milk' ? 'Litre' : 'Kg'}
+            </CardDescription>
+          </div>
+          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+            {order.status}
           </Badge>
         </div>
-        <CardDescription className="mt-2">
-          {order.product?.name || 'N/A'} - Quantity: {Number(order.quantity)}
-        </CardDescription>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-20 w-full" />
-          </div>
-        ) : error ? (
-          <div className="flex items-start gap-2 bg-destructive/10 p-4 rounded-lg border border-destructive/20">
-            <XCircle className="h-5 w-5 text-destructive mt-0.5" />
+        <div className="space-y-4">
+          {/* Order Date */}
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-accent rounded-lg">
+              <Calendar className="h-5 w-5 text-primary" />
+            </div>
             <div>
-              <p className="text-sm font-semibold text-destructive mb-1">
-                Error Loading Delivery
-              </p>
+              <p className="text-sm font-medium text-foreground">Order Date</p>
               <p className="text-sm text-muted-foreground">
-                Unable to fetch delivery information. Please try again.
+                {formatDate(order.orderDate)}
               </p>
             </div>
           </div>
-        ) : delivery ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="flex items-start gap-3 bg-primary/5 p-4 rounded-lg">
-                <Calendar className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Delivery Date</p>
-                  <p className="font-semibold text-foreground">
-                    {formatDate(delivery.deliveryDate)}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 bg-primary/5 p-4 rounded-lg">
-                <Clock className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Delivery Time</p>
-                  <p className="font-semibold text-foreground">
-                    {formatTime(delivery.deliveryTime)}
-                  </p>
-                </div>
+
+          {/* Delivery Date - from Order.deliveryDate or Delivery record */}
+          {deliveryLoading ? (
+            <div className="flex items-start gap-3">
+              <Skeleton className="h-9 w-9 rounded-lg" />
+              <div className="flex-1">
+                <Skeleton className="h-4 w-32 mb-2" />
+                <Skeleton className="h-4 w-48" />
               </div>
             </div>
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                <strong className="text-foreground">Order Date:</strong> {formatDate(order.orderDate)}
-              </p>
+          ) : (
+            <>
+              {/* Show delivery date from Order.deliveryDate if available */}
               {order.deliveryDate && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  <strong className="text-foreground">Scheduled Delivery:</strong> {formatDate(order.deliveryDate)}
-                </p>
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Truck className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Scheduled Delivery Date</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(order.deliveryDate)}
+                    </p>
+                  </div>
+                </div>
               )}
+
+              {/* Show delivery schedule details if available */}
+              {delivery ? (
+                <>
+                  {/* Only show this if we haven't already shown order.deliveryDate, or show time separately */}
+                  {!order.deliveryDate && (
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <Truck className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Scheduled Delivery Date</p>
+                        <p className="text-sm text-muted-foreground">
+                          {formatDate(delivery.deliveryDate)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Delivery Time */}
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-accent rounded-lg">
+                      <Clock className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Delivery Time</p>
+                      <p className="text-sm text-muted-foreground">
+                        {formatTime(delivery.deliveryTime)}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                !order.deliveryDate && (
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-muted rounded-lg">
+                      <AlertCircle className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Delivery Date</p>
+                      <p className="text-sm text-muted-foreground">
+                        Not scheduled yet
+                      </p>
+                    </div>
+                  </div>
+                )
+              )}
+            </>
+          )}
+
+          {/* Product Details */}
+          <div className="pt-4 border-t border-border">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Product</span>
+              <span className="font-medium text-foreground">{order.product.name}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm mt-2">
+              <span className="text-muted-foreground">Quantity</span>
+              <span className="font-medium text-foreground">
+                {order.quantity.toString()} {order.product.name === 'Milk' ? 'Litre' : 'Kg'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-sm mt-2">
+              <span className="text-muted-foreground">Total Amount</span>
+              <span className="font-semibold text-primary">
+                ₹{(Number(order.product.price) * Number(order.quantity)).toLocaleString('en-IN')}
+              </span>
             </div>
           </div>
-        ) : order.deliveryDate ? (
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 bg-primary/5 p-4 rounded-lg">
-              <Calendar className="h-5 w-5 text-primary mt-0.5" />
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Scheduled Delivery Date</p>
-                <p className="font-semibold text-foreground">
-                  {formatDate(order.deliveryDate)}
-                </p>
-              </div>
-            </div>
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                <strong className="text-foreground">Order Date:</strong> {formatDate(order.orderDate)}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-start gap-2 bg-muted/50 p-4 rounded-lg">
-            <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-foreground mb-1">
-                Delivery Not Scheduled Yet
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Your delivery will be scheduled soon. We'll update you once it's confirmed.
-              </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                <strong className="text-foreground">Order Date:</strong> {formatDate(order.orderDate)}
-              </p>
-            </div>
-          </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );

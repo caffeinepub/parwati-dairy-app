@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 23,
+  "projectStateVersion": 27,
   "summary": "Parwati Dairy mobile app for ordering milk, paneer, and ghee with WhatsApp integration",
   "architectural_notes": [
     "Mobile-first responsive design for dairy product ordering",
@@ -239,7 +239,32 @@
       "id": "feature-display-the-delivery-date-field-on-the-deliveryschedule-page-for-each-order-showing-when-that-specific-order-is-scheduled-for-delivery-with-proper-date-formatting",
       "title": "Display the delivery date field on the DeliverySchedule page for each order, showing when that specific order is scheduled for delivery with proper date formatting",
       "reqIds": [
-        "REQ-28"
+        "REQ-28",
+        "REQ-32"
+      ],
+      "version": 2
+    },
+    {
+      "id": "feature-fix-the-qr-code-click-handler-on-the-orderform-page-to-properly-open-the-phonepe-mobile-application-using-the-correct-deep-link-format-that-works-on-android-and-ios-devices",
+      "title": "Fix the QR code click handler on the OrderForm page to properly open the PhonePe mobile application using the correct deep link format that works on Android and iOS devices",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-real-time-total-amount-calculation-on-the-orderform-page-that-multiplies-the-selected-product-price-milk-60-litre-paneer-400-kg-ghee-1500-kg-by-the-entered-quantity-and-displays-the-calculated-total-prominently-above-the-submit-button",
+      "title": "Add real-time total amount calculation on the OrderForm page that multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity and displays the calculated total prominently above the submit button",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-payment-qr-code-image-on-the-orderform-page-with-the-newly-uploaded-state-bank-of-india-qr-code-image-img-3581-1-jpeg-showing-account-number-2430-with-phonepe-logo",
+      "title": "Replace the existing payment QR code image on the OrderForm page with the newly uploaded State Bank of India QR code image (IMG_3581-1.jpeg) showing account number 2430 with PhonePe logo",
+      "reqIds": [
+        "REQ-33"
       ],
       "version": 1
     }
@@ -329,6 +354,12 @@
       "reqIds": [
         "REQ-29"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Replace existing QR code with newly uploaded QR code image",
+      "reqIds": [],
       "status": "pending"
     }
   ],

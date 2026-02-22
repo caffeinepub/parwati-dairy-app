@@ -110,20 +110,25 @@ export default function OrderForm() {
     const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
     if (isMobile) {
-      // Try to open PhonePe app using deep link
-      const phonePeDeepLink = 'phonepe://';
+      // Construct PhonePe UPI deep link with payment parameters
+      // Using format: phonepe://pay?pa=UPI_ID&pn=NAME&am=AMOUNT&cu=CURRENCY
+      const upiId = 'parwatidairy@sbi'; // Replace with actual UPI ID from QR code
+      const merchantName = 'Parwati Dairy';
+      const amount = totalAmount > 0 ? totalAmount.toString() : '1'; // Use calculated total or default to 1
+      const currency = 'INR';
+      const transactionNote = formData.product ? `Order for ${formData.product}` : 'Parwati Dairy Order';
       
-      // Create a hidden iframe to attempt opening the app
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = phonePeDeepLink;
-      document.body.appendChild(iframe);
+      // Construct the deep link URL
+      const phonePeDeepLink = `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(merchantName)}&am=${amount}&cu=${currency}&tn=${encodeURIComponent(transactionNote)}`;
       
-      // Set a timeout to check if the app opened
+      // Fallback URL if app is not installed
+      const fallbackUrl = 'https://www.phonepe.com/';
+      
+      // Track if app opened successfully
       let appOpened = false;
       const startTime = Date.now();
       
-      // If user leaves the page (app opened), mark as successful
+      // Listen for visibility change (indicates app opened)
       const visibilityHandler = () => {
         if (document.hidden) {
           appOpened = true;
@@ -131,33 +136,33 @@ export default function OrderForm() {
       };
       document.addEventListener('visibilitychange', visibilityHandler);
       
+      // Try to open the PhonePe app
+      window.location.href = phonePeDeepLink;
+      
       // Check after a delay if app didn't open
       setTimeout(() => {
         document.removeEventListener('visibilitychange', visibilityHandler);
-        document.body.removeChild(iframe);
         
         const timeElapsed = Date.now() - startTime;
         
         // If less than 2 seconds passed and page is still visible, app likely didn't open
         if (!appOpened && timeElapsed < 2000 && !document.hidden) {
+          // Show error and offer fallback
           toast.error('PhonePe app not found', {
             description: 'Please install PhonePe app or scan the QR code manually from within the PhonePe app.',
             duration: 5000,
+            action: {
+              label: 'Open PhonePe Website',
+              onClick: () => window.open(fallbackUrl, '_blank'),
+            },
           });
         } else if (appOpened || document.hidden) {
           toast.success('Opening PhonePe...', {
-            description: 'Please complete the payment in the PhonePe app.',
+            description: `Please complete the payment of ₹${amount} in the PhonePe app.`,
             duration: 3000,
           });
         }
       }, 1500);
-      
-      // Also try direct window.location as fallback
-      setTimeout(() => {
-        if (!appOpened) {
-          window.location.href = phonePeDeepLink;
-        }
-      }, 100);
     } else {
       // On desktop, show a message that this feature is for mobile
       toast.info('Mobile feature', {
@@ -348,8 +353,8 @@ export default function OrderForm() {
                     aria-label="Click to open PhonePe app for payment"
                   >
                     <img
-                      src="/assets/generated/payment-qr.dim_400x400.png"
-                      alt="PhonePe Payment QR Code"
+                      src="/assets/IMG_3581-1.jpeg"
+                      alt="State Bank of India PhonePe Payment QR Code"
                       className="w-56 h-56 md:w-64 md:h-64 object-contain pointer-events-none"
                       onError={(e) => {
                         console.error('QR code image failed to load');

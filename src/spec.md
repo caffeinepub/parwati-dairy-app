@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Enable PhonePe deep linking, live order total calculation, delivery date visibility, and automated SMS order confirmations.
+**Goal:** Replace the existing payment QR code with the uploaded State Bank of India QR code image.
 
 **Planned changes:**
-- Fix PhonePe QR code to open PhonePe app on mobile using phonepe:// deep link
-- Add real-time total amount calculation on OrderForm (quantity × product rate)
-- Display delivery date for each order on DeliverySchedule page
-- Implement backend SMS notification system to send order confirmations to customer mobile numbers
+- Replace the current QR code image on the OrderForm page with the uploaded IMG_3581-1.jpeg file
+- Ensure the new QR code maintains proper dimensions and clarity for scanning
+- Preserve the PhonePe deep link functionality when the QR code is tapped
 
-**User-visible outcome:** Customers can tap the QR code to launch PhonePe directly, see their order total update as they enter quantity, view delivery dates in their schedule, and receive SMS confirmations after placing orders.
+**User-visible outcome:** Users will see the State Bank of India account 2430 QR code with PhonePe logo on the order form, which they can scan or tap to complete payment.

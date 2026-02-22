@@ -1,97 +1,38 @@
 {
   "kind": "build_request",
-  "title": "Implement PhonePe integration, live total calculation, delivery date display, and SMS notifications",
+  "title": "Replace QR code with uploaded State Bank of India QR code image",
   "projectName": "Parwati Dairy",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-26",
-      "text": "Fix the PhonePe QR code click handler on the OrderForm page to correctly open the PhonePe mobile application using the proper deep link URL format (phonepe://) that works on mobile devices",
+      "id": "REQ-33",
+      "text": "Replace the existing payment QR code image on the OrderForm page with the newly uploaded State Bank of India QR code image (IMG_3581-1.jpeg) showing account number 2430 with PhonePe logo",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "PhonePe QR Integration - Clicking the QR code will open the PhonePe app directly on mobile devices for seamless payment"
+          "Please add this QR code in this app"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking the QR code image on OrderForm opens the PhonePe app on mobile devices",
-        "The deep link uses the correct phonepe:// URL scheme",
-        "Falls back gracefully if PhonePe app is not installed"
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "text": "Add real-time total amount calculation on the OrderForm page that dynamically multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity value and displays the calculated total amount prominently above the submit button",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Live Total Calculation - As customers enter quantity, the app instantly shows the total amount (Quantity × Rate)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Total amount updates in real-time as quantity changes",
-        "Calculation uses correct product rates: Milk ₹60/L, Paneer ₹400/Kg, Ghee ₹1500/Kg",
-        "Total amount is displayed prominently with rupee symbol formatting",
-        "Total appears before the WhatsApp submit button"
-      ]
-    },
-    {
-      "id": "REQ-28",
-      "text": "Display the delivery date field on the DeliverySchedule page for each order, showing when that specific order is scheduled for delivery with proper date formatting",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Delivery Date Display - The delivery schedule will show exactly when each order is set for delivery"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Delivery date is visible for each order in the delivery schedule",
-        "Date is formatted in a user-friendly way",
-        "Handles cases where delivery date may not be set"
-      ]
-    },
-    {
-      "id": "REQ-29",
-      "text": "Implement SMS notification functionality that automatically sends an order confirmation message to the customer's mobile phone number when an order is successfully placed through the OrderForm",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "SMS Notifications - Customers automatically receive order confirmation messages on their mobile numbers when orders are placed"
-        ]
-      },
-      "acceptanceCriteria": [
-        "SMS is sent to the customer's phone number after order placement",
-        "Message includes order confirmation details",
-        "SMS sending does not block the order submission flow",
-        "Handles SMS sending failures gracefully"
+        "The OrderForm page displays the uploaded QR code image (IMG_3581-1.jpeg) instead of the previous QR code",
+        "The QR code is positioned prominently after product selection and quantity fields but before the WhatsApp submit button",
+        "The QR code image maintains proper dimensions and clarity for scanning",
+        "The QR code remains clickable and opens PhonePe mobile application when tapped"
       ]
     }
   ],
   "constraints": [
-    "Maintain single-actor architecture in backend/main.mo",
-    "Do not modify immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
-    "Use existing WhatsApp integration pattern for order submission",
-    "Preserve existing order history and delivery schedule functionality",
-    "Keep warm color scheme and avoid blue/purple as per design guidelines"
+    "Do not modify the existing PhonePe deep link functionality for the QR code",
+    "Maintain the current positioning and layout of the QR code section on the OrderForm page",
+    "Preserve the real-time total amount calculation feature already implemented"
   ],
   "nonGoals": [
-    "Modifying the WhatsApp message format",
-    "Changing the product prices",
-    "Altering the QR code image itself",
-    "Redesigning the overall app layout",
-    "Adding new products beyond Milk, Paneer, and Ghee"
+    "Changing the WhatsApp integration functionality",
+    "Modifying the order form fields or validation logic",
+    "Altering the backend order processing logic"
   ],
   "imageRequirements": {
     "required": [],

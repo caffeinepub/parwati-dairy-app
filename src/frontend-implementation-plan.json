@@ -1,54 +1,27 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Implement PhonePe integration, live total calculation, delivery date display, and SMS notifications",
+  "title": "Replace QR code with uploaded State Bank of India QR code image",
   "requirements": [
     {
-      "id": "REQ-26",
-      "summary": "Fix PhonePe QR code click handler to use proper mobile deep link URL",
+      "id": "REQ-33",
+      "summary": "Replace the existing payment QR code image on the OrderForm page with the uploaded State Bank of India QR code image (IMG_3581-1.jpeg)",
       "acceptanceCriteria": [
-        "Clicking the QR code image on OrderForm opens the PhonePe app on mobile devices",
-        "The deep link uses the correct phonepe:// URL scheme",
-        "Falls back gracefully if PhonePe app is not installed"
+        "The OrderForm page displays the uploaded QR code image (IMG_3581-1.jpeg) instead of the previous QR code",
+        "The QR code is positioned prominently after product selection and quantity fields but before the WhatsApp submit button",
+        "The QR code image maintains proper dimensions and clarity for scanning",
+        "The QR code remains clickable and opens PhonePe mobile application when tapped"
       ],
       "file_operations": [
+        {
+          "path": "frontend/public/assets/IMG_3581-1.jpeg",
+          "operation": "create",
+          "description": "Copy the uploaded State Bank of India QR code image (IMG_3581-1.jpeg) to the frontend public assets directory so it can be referenced as a static asset in the OrderForm component"
+        },
         {
           "path": "frontend/src/pages/OrderForm.tsx",
           "operation": "modify",
-          "description": "Update the PhonePe QR code click handler to use the phonepe:// deep link URL scheme instead of the current implementation. Implement a click handler on the QR code image that attempts to open phonepe://pay or phonepe://upi with appropriate parameters. Add fallback logic that detects if the PhonePe app launch fails (e.g., using a timeout or window focus detection) and shows a helpful message to the user. Reference the generated QR code image at frontend/public/assets/generated/payment-qr.dim_400x400.png."
-        }
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "summary": "Add real-time total amount calculation on OrderForm page",
-      "acceptanceCriteria": [
-        "Total amount updates in real-time as quantity changes",
-        "Calculation uses correct product rates: Milk ₹60/L, Paneer ₹400/Kg, Ghee ₹1500/Kg",
-        "Total amount is displayed prominently with rupee symbol formatting",
-        "Total appears before the WhatsApp submit button"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/OrderForm.tsx",
-          "operation": "modify",
-          "description": "Add state management for calculating and displaying the total amount dynamically. Create a computed value that multiplies the selected product's price (Milk: 60, Paneer: 400, Ghee: 1500) by the quantity input value. Display the calculated total amount in a prominent position above the WhatsApp submit button, formatted with the rupee symbol (₹) and proper number formatting. Use a useEffect or direct calculation in the render to ensure the total updates immediately when quantity or product changes. Style the total amount display to be visually prominent using the warm color scheme from the design system."
-        }
-      ]
-    },
-    {
-      "id": "REQ-28",
-      "summary": "Display delivery date field on DeliverySchedule page for each order",
-      "acceptanceCriteria": [
-        "Delivery date is visible for each order in the delivery schedule",
-        "Date is formatted in a user-friendly way",
-        "Handles cases where delivery date may not be set"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/DeliverySchedule.tsx",
-          "operation": "modify",
-          "description": "Modify the order display to show the deliveryDate field from each order record. Format the deliveryDate timestamp using the same date formatting pattern used for orderDate in the component (toLocaleDateString with appropriate locale). Add conditional rendering to handle cases where deliveryDate is undefined or null, displaying a placeholder message like 'Not scheduled' or 'Pending' in those cases. Ensure the delivery date is prominently displayed alongside the existing order information in the delivery schedule list."
+          "description": "Update the QR code image source to reference the new State Bank of India QR code at /assets/IMG_3581-1.jpeg. Maintain the existing PhonePe deep link functionality, positioning after product selection and quantity fields but before the WhatsApp submit button, and ensure proper dimensions for scanning clarity. Preserve the real-time total amount calculation feature and all existing form validation logic."
         }
       ]
     }

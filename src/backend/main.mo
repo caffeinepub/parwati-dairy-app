@@ -4,9 +4,9 @@ import Nat "mo:core/Nat";
 import List "mo:core/List";
 import Iter "mo:core/Iter";
 import OutCall "http-outcalls/outcall";
-import Migration "migration";
 
-(with migration = Migration.run)
+
+
 actor {
   public type Product = {
     id : Nat;
