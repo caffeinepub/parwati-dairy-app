@@ -1,0 +1,78 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Add daily order records for regular customers with admin-only access control",
+  "requirements": [
+    {
+      "id": "REQ-43",
+      "summary": "Add TanStack Query hooks for daily order records and admin status check",
+      "acceptanceCriteria": [
+        "useAddDailyOrderRecord mutation calls addDailyOrderRecord on the actor and invalidates relevant queries on success",
+        "useDailyOrderRecordsByCustomer fetches records for a given customerId",
+        "useDeleteDailyOrderRecord mutation calls deleteDailyOrderRecord and invalidates relevant queries",
+        "useIsAdmin returns a boolean reflecting the isAdmin backend response for the current identity"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useIsAdmin query hook that calls isCallerAdmin backend function to determine admin access. Add useAddDailyOrderRecord mutation that accepts customerId, date, quantityDelivered, amountCharged, and optional notes, calling addDailyOrderRecord and invalidating dailyOrderRecords queries on success. Add useDailyOrderRecordsByCustomer query hook that fetches daily order records for a specific customerId. Add useDeleteDailyOrderRecord mutation that removes a record by recordId and invalidates relevant queries. All hooks use the useActor hook to access the backend actor and follow the existing TanStack Query patterns in the file."
+        }
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "summary": "Add Daily Orders dialog with record table and inline form to RegularCustomers page",
+      "acceptanceCriteria": [
+        "Each customer card on RegularCustomers page has a 'Daily Orders' button",
+        "Clicking 'Daily Orders' opens a dialog listing all daily order records for that customer",
+        "Records are displayed in a table with Date, Quantity, Amount, and Notes columns",
+        "An 'Add Daily Record' form is accessible within the dialog",
+        "Amount Charged auto-calculates as quantity × customer's pricePerLitre but remains editable",
+        "Submitting the form calls addDailyOrderRecord and refreshes the records list",
+        "Each record row has a delete button that calls deleteDailyOrderRecord with confirmation"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/RegularCustomers.tsx",
+          "operation": "modify",
+          "description": "Add a 'Daily Orders' button to each customer card that opens a Dialog component showing all daily order records for that customer using the useDailyOrderRecordsByCustomer hook. Inside the dialog, display records in a table with columns for Date, Quantity (L), Amount (₹), and Notes, showing loading skeleton while fetching and error state if fetch fails. Include an 'Add Daily Record' button that toggles an inline form with fields for Date (date picker using shadcn/ui Calendar or Input type='date'), Quantity Delivered (number input), Amount Charged (number input that auto-populates as quantity × customer's pricePerLitre but allows manual edits), and optional Notes (textarea). On form submit, call useAddDailyOrderRecord mutation with the customer's customerId. Add a delete icon button on each record row that triggers a confirmation dialog before calling useDeleteDailyOrderRecord mutation. Use existing shadcn/ui components (Dialog, Table, Button, Input, Label) and follow the styling patterns already present in the file. Handle loading and error states for both fetching and mutations."
+        }
+      ]
+    },
+    {
+      "id": "REQ-45",
+      "summary": "Add admin access guard to RegularCustomers and OrderHistory pages using useIsAdmin hook",
+      "acceptanceCriteria": [
+        "RegularCustomers page shows 'Admin Access Required' UI when useIsAdmin returns false",
+        "The 'Admin Access Required' UI includes a login button that triggers Internet Identity login",
+        "After successful admin login, the protected content is displayed",
+        "OrderHistory page shows admin-only order listing only when useIsAdmin returns true",
+        "Non-admin users see an appropriate access denied message on admin-restricted pages",
+        "Loading state is handled gracefully while useIsAdmin is fetching"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/AdminGuard.tsx",
+          "operation": "create",
+          "description": "Create a reusable AdminGuard component that uses the useIsAdmin hook and useInternetIdentity hook. While isLoading is true, display a loading skeleton or spinner. If the user is not authenticated (identity is null), show an 'Admin Access Required' message with a prominent 'Login with Internet Identity' button that calls the login function from useInternetIdentity. If authenticated but useIsAdmin returns false, display an 'Unauthorized' message explaining that admin access is required. If useIsAdmin returns true, render the children prop. Use shadcn/ui components (Card, Button, Alert) for consistent styling. Handle error states from useIsAdmin gracefully."
+        },
+        {
+          "path": "frontend/src/pages/RegularCustomers.tsx",
+          "operation": "modify",
+          "description": "Wrap the entire page content (excluding the page title/header container) with the AdminGuard component so that the customer list, add customer form, and all customer management features are only accessible to authenticated admin users. Import AdminGuard from '../components/AdminGuard'. The page title/header can remain visible, but the functional content should be protected."
+        },
+        {
+          "path": "frontend/src/pages/OrderHistory.tsx",
+          "operation": "modify",
+          "description": "Add conditional rendering using the useIsAdmin hook to determine whether to show all orders across customers (admin view) or only the current customer's orders. If useIsAdmin returns true, fetch and display all orders using a new useAllOrders hook (to be added in useQueries.ts). If useIsAdmin returns false or the user is not authenticated, display the existing customer-specific order history (current behavior). Show loading state while useIsAdmin is fetching. Ensure the page gracefully handles the transition between admin and non-admin views. Do not block access to the page entirely; instead, scope the data shown based on admin status."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useAllOrders query hook that calls getAllOrders backend function to fetch all orders across all customers. This hook should only be called when the user is confirmed to be an admin. Follow the existing TanStack Query patterns and use the useActor hook. Invalidate this query when relevant order mutations succeed (e.g., after placing or updating an order)."
+        }
+      ]
+    }
+  ]
+}

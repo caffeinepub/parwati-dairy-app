@@ -1,0 +1,74 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-tanstack-query-hooks-in-usequeries-ts-for-the-new-daily-order-record-backend-functions-useadddailyorderrecord-mutation-usedailyorderrecordsbycustomer-query-takes-customerid-and-usedeletedailyorderrecord-mutation-also-add-a-useisadmin-query-that-calls-the-isadmin-backend-function-to-determine-whether-the-current-user-has-admin-access",
+      "featureTitle": "Add TanStack Query hooks in useQueries.ts for the new daily order record backend functions: useAddDailyOrderRecord mutation, useDailyOrderRecordsByCustomer query (takes customerId), and useDeleteDailyOrderRecord mutation. Also add a useIsAdmin query that calls the isAdmin backend function to determine whether the current user has admin access.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0",
+        "http-outcalls@3.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-43"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-on-the-regularcustomers-page-add-a-daily-orders-button-on-each-customer-card-that-opens-a-dialog-showing-that-customer-s-daily-order-records-in-a-table-columns-date-quantity-l-amount-notes-include-an-add-daily-record-button-in-the-dialog-that-opens-a-small-inline-form-with-fields-for-date-date-picker-quantity-delivered-number-amount-charged-auto-calculated-from-quantity-priceperlitre-but-editable-and-optional-notes-on-form-submission-call-the-adddailyorderrecord-mutation-include-a-delete-icon-on-each-record-row-that-calls-deletesdailyorderrecord",
+      "featureTitle": "On the RegularCustomers page, add a 'Daily Orders' button on each customer card that opens a dialog showing that customer's daily order records in a table (columns: Date, Quantity (L), Amount (₹), Notes). Include an 'Add Daily Record' button in the dialog that opens a small inline form with fields for Date (date picker), Quantity Delivered (number), Amount Charged (auto-calculated from quantity × pricePerLitre but editable), and optional Notes. On form submission, call the addDailyOrderRecord mutation. Include a delete icon on each record row that calls deletesDailyOrderRecord.",
+      "files": [
+        "frontend/src/pages/RegularCustomers.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0",
+        "http-outcalls@3.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-44"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-wrap-the-regularcustomers-page-and-any-admin-only-sections-order-details-customer-details-with-an-admin-access-guard-using-the-useisadmin-hook-if-the-user-is-not-authenticated-as-admin-display-a-clear-admin-access-required-message-with-a-login-with-internet-identity-button-instead-of-the-protected-content-the-orderhistory-page-should-also-check-admin-status-before-displaying-all-orders-across-customers-individual-customer-s-own-orders-placed-via-the-order-form-remain-accessible-without-admin-login",
+      "featureTitle": "Wrap the RegularCustomers page and any admin-only sections (order details, customer details) with an admin access guard using the useIsAdmin hook. If the user is not authenticated as admin, display a clear 'Admin Access Required' message with a 'Login with Internet Identity' button instead of the protected content. The OrderHistory page should also check admin status before displaying all orders across customers (individual customer's own orders placed via the order form remain accessible without admin login).",
+      "files": [
+        "frontend/src/components/AdminGuard.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/OrderHistory.tsx",
+        "frontend/src/pages/RegularCustomers.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "qr-code@1.0.0",
+        "camera@1.0.0",
+        "http-outcalls@3.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-45"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-03-02T13:07:42.897Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 5,
+    "implemented": 3,
+    "items": [
+      {
+        "id": "REQ-41",
+        "summary": "Add a DailyOrderRecord type to the backend with fields: recordId (Nat), customerId (Nat), date (Text), quantityDelivered (Float), amountCharged (Float), and notes (optional Text). Implement backend functions: addDailyOrderRecord (creates a new daily order record for a customer), getDailyOrderRecordsByCustomer (returns all records for a given customerId), getAllDailyOrderRecords (returns all records across all customers), and deleteDailyOrderRecord (removes a record by recordId). Store records in a stable HashMap keyed by recordId with a nextRecordId counter.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-42",
+        "summary": "Add admin authentication to the backend using Internet Identity principal. Store a hardcoded or configurable admin principal. Expose an isAdmin query function that returns true if the caller's principal matches the admin principal. Gate the following backend functions so they only execute when called by the admin principal, returning an error for unauthorized callers: getRegularCustomers, addRegularCustomer, updateRegularCustomer, recordDailyDelivery, recordPayment, getAllDailyOrderRecords, deleteDailyOrderRecord, and getAllOrders (order history across all customers).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-43",
+        "summary": "Add TanStack Query hooks in useQueries.ts for the new daily order record backend functions: useAddDailyOrderRecord mutation, useDailyOrderRecordsByCustomer query (takes customerId), and useDeleteDailyOrderRecord mutation. Also add a useIsAdmin query that calls the isAdmin backend function to determine whether the current user has admin access.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-44",
+        "summary": "On the RegularCustomers page, add a 'Daily Orders' button on each customer card that opens a dialog showing that customer's daily order records in a table (columns: Date, Quantity (L), Amount (₹), Notes). Include an 'Add Daily Record' button in the dialog that opens a small inline form with fields for Date (date picker), Quantity Delivered (number), Amount Charged (auto-calculated from quantity × pricePerLitre but editable), and optional Notes. On form submission, call the addDailyOrderRecord mutation. Include a delete icon on each record row that calls deletesDailyOrderRecord.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/RegularCustomers.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/RegularCustomers.tsx"
+        ]
+      },
+      {
+        "id": "REQ-45",
+        "summary": "Wrap the RegularCustomers page and any admin-only sections (order details, customer details) with an admin access guard using the useIsAdmin hook. If the user is not authenticated as admin, display a clear 'Admin Access Required' message with a 'Login with Internet Identity' button instead of the protected content. The OrderHistory page should also check admin status before displaying all orders across customers (individual customer's own orders placed via the order form remain accessible without admin login).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/AdminGuard.tsx",
+          "frontend/src/pages/RegularCustomers.tsx",
+          "frontend/src/pages/OrderHistory.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/AdminGuard.tsx",
+          "frontend/src/pages/RegularCustomers.tsx",
+          "frontend/src/pages/OrderHistory.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/AdminGuard.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/OrderHistory.tsx",
+    "frontend/src/pages/RegularCustomers.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

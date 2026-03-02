@@ -1,0 +1,486 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 33,
+  "summary": "Parwati Dairy mobile app for ordering milk, paneer, and ghee with WhatsApp integration",
+  "architectural_notes": [
+    "Mobile-first responsive design for dairy product ordering",
+    "WhatsApp Business API integration for order submission",
+    "Hindi/English bilingual support for branding",
+    "QR code payment integration for order transactions",
+    "Customer order history database and tracking system",
+    "Delivery scheduling system for order management",
+    "SMS notification system for order confirmations",
+    "Regular customer records system tracking daily milk orders, total amount, and payment received dates",
+    "Admin-only access control for customer records and order details"
+  ],
+  "known_issues": [
+    "Order history feature is currently displaying errors",
+    "Delivery schedule feature is currently displaying errors",
+    "QR code click not opening PhonePe app on mobile devices",
+    "Total amount not calculated and displayed based on quantity and rate"
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-a-home-screen-displaying-parwati-dairy-as-the-main-heading-with-the-tagline-and-four-navigation-buttons-labeled-milk-order-paneer-order-ghee-order-and-contact",
+      "title": "Create a home screen displaying 'Parwati Dairy' as the main heading with the tagline 'शुद्ध दूध • पनीर • देसी घी', and four navigation buttons labeled 'Milk Order', 'Paneer Order', 'Ghee Order', and 'Contact'",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-products-page-showing-three-products-with-prices-milk-at-60-per-litre-paneer-at-400-per-kg-and-ghee-at-1500-per-kg-with-an-order-now-button-for-each-product",
+      "title": "Create a products page showing three products with prices: Milk at ₹60 per Litre, Paneer at ₹400 per Kg, and Ghee at ₹1500 per Kg, with an 'Order Now' button for each product",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-an-order-form-with-input-fields-for-name-phone-address-product-dropdown-or-selection-and-quantity-with-a-send-order-on-whatsapp-button",
+      "title": "Create an order form with input fields for Name, Phone, Address, Product (dropdown or selection), and Quantity, with a 'Send Order on WhatsApp' button",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-whatsapp-integration-that-opens-whatsapp-with-phone-number-8553965714-and-pre-fills-the-message-with-hello-parwati-dairy-i-want-to-order-product-selected-product-quantity-entered-quantity-name-entered-name-address-entered-address-phone-entered-phone-delivery-yes",
+      "title": "Implement WhatsApp integration that opens WhatsApp with phone number 8553965714 and pre-fills the message with: 'Hello Parwati Dairy,\n\nI want to order:\n\nProduct: [selected product]\nQuantity: [entered quantity]\n\nName: [entered name]\nAddress: [entered address]\nPhone: [entered phone]\n\nDelivery: Yes'",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-contact-page-displaying-parwati-dairy-business-name-full-address-srirampath-kadma-road-ramnagar-hazaribagh-jharkhand-825301-and-two-phone-numbers-8553965714-and-6205017829",
+      "title": "Create a contact page displaying 'Parwati Dairy' business name, full address 'Srirampath Kadma Road, Ramnagar, Hazaribagh, Jharkhand – 825301', and two phone numbers: 8553965714 and 6205017829",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-mobile-optimized-interface-with-a-clean-professional-dairy-business-aesthetic-using-warm-trustworthy-colors-avoid-blue-and-purple-clear-typography-for-hindi-and-english-text-and-intuitive-navigation-between-all-screens",
+      "title": "Design a mobile-optimized interface with a clean, professional dairy business aesthetic using warm, trustworthy colors (avoid blue and purple), clear typography for Hindi and English text, and intuitive navigation between all screens",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-parwati-dairy-logo-throughout-the-application-with-the-new-logo-design-featuring-dairy-products-milk-can-pitcher-glass-butter-pastoral-farm-scene-with-cows-and-trees-decorative-milk-splash-and-green-leaves-and-blue-ribbon-banner-with-parwati-dairy-text-in-cream-colored-script-font",
+      "title": "Replace the existing Parwati Dairy logo throughout the application with the new logo design featuring dairy products (milk can, pitcher, glass, butter), pastoral farm scene with cows and trees, decorative milk splash and green leaves, and blue ribbon banner with 'Parwati Dairy' text in cream-colored script font",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-qr-code-for-payment-requests-on-the-order-form-page-and-or-a-dedicated-payment-section-allowing-customers-to-scan-and-complete-payments",
+      "title": "Display a QR code for payment requests on the order form page and/or a dedicated payment section, allowing customers to scan and complete payments",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-customer-order-history-tracking-feature-that-stores-and-displays-past-orders-with-details-including-product-quantity-date-and-order-status",
+      "title": "Create a customer order history tracking feature that stores and displays past orders with details including product, quantity, date, and order status",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-delivery-schedule-feature-that-allows-customers-to-view-upcoming-delivery-dates-and-times-for-their-orders",
+      "title": "Implement a delivery schedule feature that allows customers to view upcoming delivery dates and times for their orders",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-navigation-access-to-order-history-and-delivery-schedule-from-the-main-application-menu",
+      "title": "Add navigation access to order history and delivery schedule from the main application menu",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-a-qr-code-image-for-payment-on-the-orderform-page-positioned-prominently-after-the-product-selection-and-quantity-fields-but-before-the-whatsapp-submit-button",
+      "title": "Display a QR code image for payment on the OrderForm page, positioned prominently after the product selection and quantity fields but before the WhatsApp submit button",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-qr-code-image-on-the-orderform-page-with-the-uploaded-state-bank-of-india-qr-code-image-image-png-showing-account-number-2430",
+      "title": "Replace the existing QR code image on the OrderForm page with the uploaded State Bank of India QR code image (image.png) showing account number 2430",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-qr-code-image-on-the-orderform-page-clickable-so-that-when-a-user-clicks-on-it-they-are-redirected-to-phonepe-for-making-payment-using-the-displayed-qr-code",
+      "title": "Make the QR code image on the OrderForm page clickable, so that when a user clicks on it, they are redirected to PhonePe for making payment using the displayed QR code",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-errors-occurring-in-the-order-history-feature-to-ensure-it-correctly-fetches-and-displays-customer-order-data-without-crashes-or-error-states",
+      "title": "Debug and fix the errors occurring in the order history feature to ensure it correctly fetches and displays customer order data without crashes or error states",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-errors-occurring-in-the-delivery-schedule-feature-to-ensure-it-correctly-fetches-and-displays-delivery-information-without-crashes-or-error-states",
+      "title": "Debug and fix the errors occurring in the delivery schedule feature to ensure it correctly fetches and displays delivery information without crashes or error states",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-delivery-date-field-to-the-delivery-schedule-display-showing-when-each-order-is-scheduled-for-delivery",
+      "title": "Add delivery date field to the delivery schedule display, showing when each order is scheduled for delivery",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-payment-qr-code-image-on-the-orderform-page-with-the-newly-uploaded-qr-code-image",
+      "title": "Replace the existing payment QR code image on the OrderForm page with the newly uploaded QR code image",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-when-the-qr-code-image-is-clicked-open-the-phonepe-mobile-application-to-process-payment-using-the-displayed-qr-code",
+      "title": "When the QR code image is clicked, open the PhonePe mobile application to process payment using the displayed QR code",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-errors-occurring-in-the-orderhistory-page-to-ensure-it-correctly-fetches-and-displays-customer-order-data-without-crashes-or-error-states",
+      "title": "Debug and fix the errors occurring in the OrderHistory page to ensure it correctly fetches and displays customer order data without crashes or error states",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-errors-occurring-in-the-deliveryschedule-page-to-ensure-it-correctly-fetches-and-displays-delivery-information-without-crashes-or-error-states",
+      "title": "Debug and fix the errors occurring in the DeliverySchedule page to ensure it correctly fetches and displays delivery information without crashes or error states",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-delivery-date-field-to-the-deliveryschedule-page-display-showing-when-each-order-is-scheduled-for-delivery",
+      "title": "Add delivery date field to the DeliverySchedule page display, showing when each order is scheduled for delivery",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-qr-code-click-handler-on-the-orderform-page-to-properly-open-the-phonepe-mobile-application-on-mobile-devices-using-the-correct-phonepe-upi-deep-link-scheme-phonepe",
+      "title": "Fix the QR code click handler on the OrderForm page to properly open the PhonePe mobile application on mobile devices using the correct PhonePe UPI deep link scheme (phonepe://)",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-real-time-total-amount-calculation-on-the-orderform-page-that-multiplies-the-selected-product-price-milk-60-litre-paneer-400-kg-ghee-1500-kg-by-the-entered-quantity-and-displays-the-total-amount-prominently-before-the-submit-button",
+      "title": "Add real-time total amount calculation on the OrderForm page that multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity and displays the total amount prominently before the submit button",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-sms-notification-functionality-that-sends-a-confirmation-message-to-the-customer-s-mobile-number-when-an-order-is-successfully-placed",
+      "title": "Implement SMS notification functionality that sends a confirmation message to the customer's mobile number when an order is successfully placed",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-phonepe-qr-code-click-handler-on-the-orderform-page-to-correctly-open-the-phonepe-mobile-application-using-the-proper-deep-link-url-format-phonepe-that-works-on-mobile-devices",
+      "title": "Fix the PhonePe QR code click handler on the OrderForm page to correctly open the PhonePe mobile application using the proper deep link URL format (phonepe://) that works on mobile devices",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-real-time-total-amount-calculation-on-the-orderform-page-that-dynamically-multiplies-the-selected-product-price-milk-60-litre-paneer-400-kg-ghee-1500-kg-by-the-entered-quantity-value-and-displays-the-calculated-total-amount-prominently-above-the-submit-button",
+      "title": "Add real-time total amount calculation on the OrderForm page that dynamically multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity value and displays the calculated total amount prominently above the submit button",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-the-delivery-date-field-on-the-deliveryschedule-page-for-each-order-showing-when-that-specific-order-is-scheduled-for-delivery-with-proper-date-formatting",
+      "title": "Display the delivery date field on the DeliverySchedule page for each order, showing when that specific order is scheduled for delivery with proper date formatting",
+      "reqIds": [
+        "REQ-28",
+        "REQ-32"
+      ],
+      "version": 2
+    },
+    {
+      "id": "feature-fix-the-qr-code-click-handler-on-the-orderform-page-to-properly-open-the-phonepe-mobile-application-using-the-correct-deep-link-format-that-works-on-android-and-ios-devices",
+      "title": "Fix the QR code click handler on the OrderForm page to properly open the PhonePe mobile application using the correct deep link format that works on Android and iOS devices",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-real-time-total-amount-calculation-on-the-orderform-page-that-multiplies-the-selected-product-price-milk-60-litre-paneer-400-kg-ghee-1500-kg-by-the-entered-quantity-and-displays-the-calculated-total-prominently-above-the-submit-button",
+      "title": "Add real-time total amount calculation on the OrderForm page that multiplies the selected product price (Milk: ₹60/Litre, Paneer: ₹400/Kg, Ghee: ₹1500/Kg) by the entered quantity and displays the calculated total prominently above the submit button",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-payment-qr-code-image-on-the-orderform-page-with-the-newly-uploaded-state-bank-of-india-qr-code-image-img-3581-1-jpeg-showing-account-number-2430-with-phonepe-logo",
+      "title": "Replace the existing payment QR code image on the OrderForm page with the newly uploaded State Bank of India QR code image (IMG_3581-1.jpeg) showing account number 2430 with PhonePe logo",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-delivery-date-picker-input-field-to-the-orderform-page-allowing-customers-to-select-their-preferred-delivery-date-when-placing-an-order",
+      "title": "Add a delivery date picker input field to the OrderForm page, allowing customers to select their preferred delivery date when placing an order",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-include-the-selected-delivery-date-in-the-whatsapp-message-sent-when-submitting-an-order-through-the-orderform-page",
+      "title": "Include the selected delivery date in the WhatsApp message sent when submitting an order through the OrderForm page",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-regularcustomers-page-in-the-frontend-that-lists-all-regular-customers-showing-their-name-phone-daily-milk-quantity-in-litres-total-amount-due-amount-received-balance-due-totalamountdue-amountreceived-and-last-payment-date-include-an-add-customer-button-that-opens-a-form-to-register-a-new-regular-customer-with-fields-for-name-phone-address-daily-milk-quantity-and-price-per-litre",
+      "title": "Create a new RegularCustomers page in the frontend that lists all regular customers showing their name, phone, daily milk quantity (in litres), total amount due, amount received, balance due (totalAmountDue - amountReceived), and last payment date. Include an 'Add Customer' button that opens a form to register a new regular customer with fields for name, phone, address, daily milk quantity, and price per litre.",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-action-buttons-on-each-regular-customer-card-on-the-regularcustomers-page-a-record-daily-delivery-button-that-triggers-the-recorddailydelivery-backend-function-for-that-customer-adding-their-daily-quantity-to-total-amount-due-and-a-record-payment-button-that-opens-a-small-form-to-enter-the-amount-received-and-date-then-calls-the-recordpayment-backend-function",
+      "title": "Add action buttons on each regular customer card on the RegularCustomers page: a 'Record Daily Delivery' button that triggers the recordDailyDelivery backend function for that customer (adding their daily quantity to total amount due), and a 'Record Payment' button that opens a small form to enter the amount received and date, then calls the recordPayment backend function.",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-regular-customers-navigation-link-in-the-layout-component-s-navigation-menu-alongside-the-existing-order-history-and-delivery-schedule-links-that-routes-to-the-new-regular-customers-page-register-the-regular-customers-route-in-app-tsx",
+      "title": "Add a 'Regular Customers' navigation link in the Layout component's navigation menu (alongside the existing Order History and Delivery Schedule links) that routes to the new /regular-customers page. Register the /regular-customers route in App.tsx.",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-tanstack-query-hooks-in-usequeries-ts-for-the-new-daily-order-record-backend-functions-useadddailyorderrecord-mutation-usedailyorderrecordsbycustomer-query-takes-customerid-and-usedeletedailyorderrecord-mutation-also-add-a-useisadmin-query-that-calls-the-isadmin-backend-function-to-determine-whether-the-current-user-has-admin-access",
+      "title": "Add TanStack Query hooks in useQueries.ts for the new daily order record backend functions: useAddDailyOrderRecord mutation, useDailyOrderRecordsByCustomer query (takes customerId), and useDeleteDailyOrderRecord mutation. Also add a useIsAdmin query that calls the isAdmin backend function to determine whether the current user has admin access.",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-regularcustomers-page-add-a-daily-orders-button-on-each-customer-card-that-opens-a-dialog-showing-that-customer-s-daily-order-records-in-a-table-columns-date-quantity-l-amount-notes-include-an-add-daily-record-button-in-the-dialog-that-opens-a-small-inline-form-with-fields-for-date-date-picker-quantity-delivered-number-amount-charged-auto-calculated-from-quantity-priceperlitre-but-editable-and-optional-notes-on-form-submission-call-the-adddailyorderrecord-mutation-include-a-delete-icon-on-each-record-row-that-calls-deletesdailyorderrecord",
+      "title": "On the RegularCustomers page, add a 'Daily Orders' button on each customer card that opens a dialog showing that customer's daily order records in a table (columns: Date, Quantity (L), Amount (₹), Notes). Include an 'Add Daily Record' button in the dialog that opens a small inline form with fields for Date (date picker), Quantity Delivered (number), Amount Charged (auto-calculated from quantity × pricePerLitre but editable), and optional Notes. On form submission, call the addDailyOrderRecord mutation. Include a delete icon on each record row that calls deletesDailyOrderRecord.",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-wrap-the-regularcustomers-page-and-any-admin-only-sections-order-details-customer-details-with-an-admin-access-guard-using-the-useisadmin-hook-if-the-user-is-not-authenticated-as-admin-display-a-clear-admin-access-required-message-with-a-login-with-internet-identity-button-instead-of-the-protected-content-the-orderhistory-page-should-also-check-admin-status-before-displaying-all-orders-across-customers-individual-customer-s-own-orders-placed-via-the-order-form-remain-accessible-without-admin-login",
+      "title": "Wrap the RegularCustomers page and any admin-only sections (order details, customer details) with an admin access guard using the useIsAdmin hook. If the user is not authenticated as admin, display a clear 'Admin Access Required' message with a 'Login with Internet Identity' button instead of the protected content. The OrderHistory page should also check admin status before displaying all orders across customers (individual customer's own orders placed via the order form remain accessible without admin login).",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Home screen with branding and product navigation buttons",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Products & pricing page displaying milk, paneer, and ghee with prices",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Order form with fields for name, phone, address, product selection, and quantity",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "WhatsApp integration to send order details to 8553965714",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Contact page with business address and phone numbers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add QR code for payment requests",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Add customer order history tracking feature",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add delivery schedule feature",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "QR code should redirect to PhonePe for payment when clicked",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Add delivery date display in delivery schedule",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Fix QR code click to open PhonePe app on mobile",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Display total amount calculation based on quantity and product rate",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Send SMS notification to customer mobile number upon order confirmation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Implement SMS notification functionality that automatically sends an order confirmation message to the customer's mobile phone number when an order is successfully placed through the OrderForm",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Replace existing QR code with newly uploaded QR code image",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Include date field in order form or delivery schedule",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Update the backend order placement function to accept and store the customer-selected delivery date when creating new orders",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Add regular customer records feature tracking daily milk orders, total amount due, and payment received date",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Add a RegularCustomer data type to the backend with fields: customerId (Nat), name (Text), phone (Text), address (Text), dailyMilkQuantity (Float) in litres, pricePerLitre (Float), totalAmountDue (Float), amountReceived (Float), lastPaymentDate (optional Text), and isActive (Bool). Implement backend functions: addRegularCustomer, getRegularCustomers, updateRegularCustomer, recordDailyDelivery (which adds to totalAmountDue based on daily quantity and price), and recordPayment (which records amount received and updates lastPaymentDate).",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Add customer daily order record tracking; restrict customer and order details visibility to admin only",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Add a DailyOrderRecord type to the backend with fields: recordId (Nat), customerId (Nat), date (Text), quantityDelivered (Float), amountCharged (Float), and notes (optional Text). Implement backend functions: addDailyOrderRecord (creates a new daily order record for a customer), getDailyOrderRecordsByCustomer (returns all records for a given customerId), getAllDailyOrderRecords (returns all records across all customers), and deleteDailyOrderRecord (removes a record by recordId). Store records in a stable HashMap keyed by recordId with a nextRecordId counter.",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Add admin authentication to the backend using Internet Identity principal. Store a hardcoded or configurable admin principal. Expose an isAdmin query function that returns true if the caller's principal matches the admin principal. Gate the following backend functions so they only execute when called by the admin principal, returning an error for unauthorized callers: getRegularCustomers, addRegularCustomer, updateRegularCustomer, recordDailyDelivery, recordPayment, getAllDailyOrderRecords, deleteDailyOrderRecord, and getAllOrders (order history across all customers).",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Parwati Dairy App",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

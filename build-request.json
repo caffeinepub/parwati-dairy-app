@@ -1,0 +1,129 @@
+{
+  "kind": "build_request",
+  "title": "Add daily order records for regular customers with admin-only access control",
+  "projectName": "Parwati Dairy",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-41",
+      "text": "Add a DailyOrderRecord type to the backend with fields: recordId (Nat), customerId (Nat), date (Text), quantityDelivered (Float), amountCharged (Float), and notes (optional Text). Implement backend functions: addDailyOrderRecord (creates a new daily order record for a customer), getDailyOrderRecordsByCustomer (returns all records for a given customerId), getAllDailyOrderRecords (returns all records across all customers), and deleteDailyOrderRecord (removes a record by recordId). Store records in a stable HashMap keyed by recordId with a nextRecordId counter.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "add customer daily order record"
+        ]
+      },
+      "acceptanceCriteria": [
+        "DailyOrderRecord type is defined with recordId, customerId, date, quantityDelivered, amountCharged, and optional notes fields",
+        "addDailyOrderRecord persists a new record and returns the new recordId",
+        "getDailyOrderRecordsByCustomer returns all records matching the given customerId",
+        "getAllDailyOrderRecords returns all daily order records",
+        "deleteDailyOrderRecord removes the specified record and returns a success/error result",
+        "nextRecordId counter increments correctly on each new record",
+        "State is preserved across upgrades via stable storage"
+      ]
+    },
+    {
+      "id": "REQ-42",
+      "text": "Add admin authentication to the backend using Internet Identity principal. Store a hardcoded or configurable admin principal. Expose an isAdmin query function that returns true if the caller's principal matches the admin principal. Gate the following backend functions so they only execute when called by the admin principal, returning an error for unauthorized callers: getRegularCustomers, addRegularCustomer, updateRegularCustomer, recordDailyDelivery, recordPayment, getAllDailyOrderRecords, deleteDailyOrderRecord, and getAllOrders (order history across all customers).",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "only admin can see customer and order details"
+        ]
+      },
+      "acceptanceCriteria": [
+        "An admin principal is stored in the actor (configurable at deploy time or set via a setAdmin function callable only once or by the initial deployer)",
+        "isAdmin() query returns true only for the authenticated admin principal",
+        "getRegularCustomers returns an error variant for non-admin callers",
+        "getAllOrders / order listing functions return an error variant for non-admin callers",
+        "getAllDailyOrderRecords returns an error variant for non-admin callers",
+        "Admin-gated functions succeed normally when called by the admin principal"
+      ]
+    },
+    {
+      "id": "REQ-43",
+      "text": "Add TanStack Query hooks in useQueries.ts for the new daily order record backend functions: useAddDailyOrderRecord mutation, useDailyOrderRecordsByCustomer query (takes customerId), and useDeleteDailyOrderRecord mutation. Also add a useIsAdmin query that calls the isAdmin backend function to determine whether the current user has admin access.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "add customer daily order record",
+          "only admin can see customer and order details"
+        ]
+      },
+      "acceptanceCriteria": [
+        "useAddDailyOrderRecord mutation calls addDailyOrderRecord on the actor and invalidates relevant queries on success",
+        "useDailyOrderRecordsByCustomer fetches records for a given customerId",
+        "useDeleteDailyOrderRecord mutation calls deleteDailyOrderRecord and invalidates relevant queries",
+        "useIsAdmin returns a boolean reflecting the isAdmin backend response for the current identity"
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "text": "On the RegularCustomers page, add a 'Daily Orders' button on each customer card that opens a dialog showing that customer's daily order records in a table (columns: Date, Quantity (L), Amount (₹), Notes). Include an 'Add Daily Record' button in the dialog that opens a small inline form with fields for Date (date picker), Quantity Delivered (number), Amount Charged (auto-calculated from quantity × pricePerLitre but editable), and optional Notes. On form submission, call the addDailyOrderRecord mutation. Include a delete icon on each record row that calls deletesDailyOrderRecord.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "add customer daily order record"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each customer card on RegularCustomers page has a 'Daily Orders' button",
+        "Clicking 'Daily Orders' opens a dialog listing all daily order records for that customer",
+        "Records are displayed in a table with Date, Quantity, Amount, and Notes columns",
+        "An 'Add Daily Record' form is accessible within the dialog",
+        "Amount Charged auto-calculates as quantity × customer's pricePerLitre but remains editable",
+        "Submitting the form calls addDailyOrderRecord and refreshes the records list",
+        "Each record row has a delete button that calls deleteDailyOrderRecord with confirmation"
+      ]
+    },
+    {
+      "id": "REQ-45",
+      "text": "Wrap the RegularCustomers page and any admin-only sections (order details, customer details) with an admin access guard using the useIsAdmin hook. If the user is not authenticated as admin, display a clear 'Admin Access Required' message with a 'Login with Internet Identity' button instead of the protected content. The OrderHistory page should also check admin status before displaying all orders across customers (individual customer's own orders placed via the order form remain accessible without admin login).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "only admin can see customer and order details"
+        ]
+      },
+      "acceptanceCriteria": [
+        "RegularCustomers page shows 'Admin Access Required' UI when useIsAdmin returns false",
+        "The 'Admin Access Required' UI includes a login button that triggers Internet Identity login",
+        "After successful admin login, the protected content is displayed",
+        "OrderHistory page shows admin-only order listing only when useIsAdmin returns true",
+        "Non-admin users see an appropriate access denied message on admin-restricted pages",
+        "Loading state is handled gracefully while useIsAdmin is fetching"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui",
+    "All Motoko logic must remain in a single actor in backend/main.mo",
+    "Admin-gating must use Internet Identity principal checks, not passwords or tokens"
+  ],
+  "nonGoals": [
+    "Multi-admin role management",
+    "Separate admin dashboard application",
+    "Third-party authentication providers",
+    "Changing the WhatsApp order flow for regular customers"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
