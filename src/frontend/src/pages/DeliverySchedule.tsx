@@ -1,11 +1,24 @@
-import { Truck, Calendar, Clock, Package, AlertCircle, XCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useOrderHistory, useDeliverySchedule } from '../hooks/useQueries';
-import { useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import type { Order } from '../backend';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  AlertCircle,
+  Calendar,
+  Clock,
+  Package,
+  Truck,
+  XCircle,
+} from "lucide-react";
+import type { Order } from "../backend";
+import { useDeliverySchedule, useOrderHistory } from "../hooks/useQueries";
 
 export default function DeliverySchedule() {
   const navigate = useNavigate();
@@ -18,15 +31,15 @@ export default function DeliverySchedule() {
     try {
       // Convert nanoseconds to milliseconds
       const date = new Date(Number(timestamp / 1_000_000n));
-      return date.toLocaleDateString('en-IN', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+      return date.toLocaleDateString("en-IN", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
     } catch (e) {
-      console.error('Error formatting date:', e);
-      return 'Invalid date';
+      console.error("Error formatting date:", e);
+      return "Invalid date";
     }
   };
 
@@ -35,7 +48,8 @@ export default function DeliverySchedule() {
   };
 
   // Filter pending orders only
-  const pendingOrders = orders?.filter(order => order.status.toLowerCase() === 'placed') || [];
+  const pendingOrders =
+    orders?.filter((order) => order.status.toLowerCase() === "placed") || [];
 
   if (isLoading) {
     return (
@@ -81,15 +95,21 @@ export default function DeliverySchedule() {
                     <XCircle className="h-6 w-6 text-destructive" />
                   </div>
                   <div>
-                    <CardTitle className="text-destructive">Error Loading Schedule</CardTitle>
+                    <CardTitle className="text-destructive">
+                      Error Loading Schedule
+                    </CardTitle>
                     <CardDescription>
-                      Unable to fetch your delivery schedule. Please try again later.
+                      Unable to fetch your delivery schedule. Please try again
+                      later.
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <Button onClick={() => window.location.reload()} variant="outline">
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                >
                   Retry
                 </Button>
               </CardContent>
@@ -131,7 +151,7 @@ export default function DeliverySchedule() {
                   <p className="text-muted-foreground mb-6">
                     You don't have any scheduled deliveries at the moment.
                   </p>
-                  <Button onClick={() => navigate({ to: '/products' })}>
+                  <Button onClick={() => navigate({ to: "/products" })}>
                     Browse Products
                   </Button>
                 </div>
@@ -140,7 +160,12 @@ export default function DeliverySchedule() {
           ) : (
             <div className="space-y-4">
               {pendingOrders.map((order) => (
-                <DeliveryCard key={order.id} order={order} formatDate={formatDate} formatTime={formatTime} />
+                <DeliveryCard
+                  key={order.id}
+                  order={order}
+                  formatDate={formatDate}
+                  formatTime={formatTime}
+                />
               ))}
             </div>
           )}
@@ -157,19 +182,31 @@ export default function DeliverySchedule() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
-                  <span>Please ensure someone is available at the delivery address during the scheduled time.</span>
+                  <span>
+                    Please ensure someone is available at the delivery address
+                    during the scheduled time.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
-                  <span>Our delivery personnel will contact you 30 minutes before arrival.</span>
+                  <span>
+                    Our delivery personnel will contact you 30 minutes before
+                    arrival.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
-                  <span>For any changes to your delivery schedule, please contact us at 8553965714.</span>
+                  <span>
+                    For any changes to your delivery schedule, please contact us
+                    at 8553965714.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-primary mt-1">•</span>
-                  <span>All dairy products should be refrigerated immediately upon delivery.</span>
+                  <span>
+                    All dairy products should be refrigerated immediately upon
+                    delivery.
+                  </span>
                 </li>
               </ul>
             </CardContent>
@@ -178,7 +215,8 @@ export default function DeliverySchedule() {
           {/* Back to Orders */}
           <div className="mt-6 text-center">
             <button
-              onClick={() => navigate({ to: '/order-history' })}
+              type="button"
+              onClick={() => navigate({ to: "/order-history" })}
               className="text-primary hover:underline font-medium"
             >
               ← Back to Order History
@@ -197,7 +235,9 @@ interface DeliveryCardProps {
 }
 
 function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
-  const { data: delivery, isLoading: deliveryLoading } = useDeliverySchedule(order.id);
+  const { data: delivery, isLoading: deliveryLoading } = useDeliverySchedule(
+    order.id,
+  );
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -208,10 +248,14 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
               Order #{order.id.toString()}
             </CardTitle>
             <CardDescription>
-              {order.product.name} - {order.quantity.toString()} {order.product.name === 'Milk' ? 'Litre' : 'Kg'}
+              {order.product.name} - {order.quantity.toString()}{" "}
+              {order.product.name === "Milk" ? "Litre" : "Kg"}
             </CardDescription>
           </div>
-          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+          <Badge
+            variant="outline"
+            className="bg-primary/10 text-primary border-primary/20"
+          >
             {order.status}
           </Badge>
         </div>
@@ -249,7 +293,9 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
                     <Truck className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">Scheduled Delivery Date</p>
+                    <p className="text-sm font-medium text-foreground">
+                      Scheduled Delivery Date
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {formatDate(order.deliveryDate)}
                     </p>
@@ -267,21 +313,25 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
                         <Truck className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">Scheduled Delivery Date</p>
+                        <p className="text-sm font-medium text-foreground">
+                          Scheduled Delivery Date
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           {formatDate(delivery.deliveryDate)}
                         </p>
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Delivery Time */}
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-accent rounded-lg">
                       <Clock className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-foreground">Delivery Time</p>
+                      <p className="text-sm font-medium text-foreground">
+                        Delivery Time
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {formatTime(delivery.deliveryTime)}
                       </p>
@@ -295,7 +345,9 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
                       <AlertCircle className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Delivery Date</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Delivery Date
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         Not scheduled yet
                       </p>
@@ -310,18 +362,24 @@ function DeliveryCard({ order, formatDate, formatTime }: DeliveryCardProps) {
           <div className="pt-4 border-t border-border">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Product</span>
-              <span className="font-medium text-foreground">{order.product.name}</span>
+              <span className="font-medium text-foreground">
+                {order.product.name}
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm mt-2">
               <span className="text-muted-foreground">Quantity</span>
               <span className="font-medium text-foreground">
-                {order.quantity.toString()} {order.product.name === 'Milk' ? 'Litre' : 'Kg'}
+                {order.quantity.toString()}{" "}
+                {order.product.name === "Milk" ? "Litre" : "Kg"}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm mt-2">
               <span className="text-muted-foreground">Total Amount</span>
               <span className="font-semibold text-primary">
-                ₹{(Number(order.product.price) * Number(order.quantity)).toLocaleString('en-IN')}
+                ₹
+                {(
+                  Number(order.product.price) * Number(order.quantity)
+                ).toLocaleString("en-IN")}
               </span>
             </div>
           </div>

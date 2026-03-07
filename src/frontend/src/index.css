@@ -3,89 +3,90 @@
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --radius: 0.75rem;
-        /* Warm dairy palette - creamy whites, warm oranges, earth tones */
-        --background: 0.98 0.01 45;
-        --foreground: 0.25 0.02 35;
-        --card: 1 0.005 50;
-        --card-foreground: 0.25 0.02 35;
-        --popover: 1 0.005 50;
-        --popover-foreground: 0.25 0.02 35;
-        --primary: 0.65 0.18 35;
-        --primary-foreground: 0.98 0.01 45;
-        --secondary: 0.92 0.03 55;
-        --secondary-foreground: 0.35 0.02 35;
-        --muted: 0.95 0.02 50;
-        --muted-foreground: 0.50 0.02 35;
-        --accent: 0.75 0.15 45;
-        --accent-foreground: 0.98 0.01 45;
-        --destructive: 0.55 0.22 25;
-        --destructive-foreground: 0.98 0.01 45;
-        --border: 0.88 0.02 45;
-        --input: 0.88 0.02 45;
-        --ring: 0.65 0.18 35;
-        --chart-1: 0.65 0.18 35;
-        --chart-2: 0.75 0.15 45;
-        --chart-3: 0.55 0.12 55;
-        --chart-4: 0.70 0.16 40;
-        --chart-5: 0.60 0.14 50;
-        --sidebar: 0.98 0.01 45;
-        --sidebar-foreground: 0.25 0.02 35;
-        --sidebar-primary: 0.65 0.18 35;
-        --sidebar-primary-foreground: 0.98 0.01 45;
-        --sidebar-accent: 0.92 0.03 55;
-        --sidebar-accent-foreground: 0.35 0.02 35;
-        --sidebar-border: 0.88 0.02 45;
-        --sidebar-ring: 0.65 0.18 35;
-    }
+  :root {
+    --radius: 0.75rem;
+    /* Warm dairy palette - creamy whites, warm oranges, earth tones */
+    --background: 0.98 0.01 45;
+    --foreground: 0.25 0.02 35;
+    --card: 1 0.005 50;
+    --card-foreground: 0.25 0.02 35;
+    --popover: 1 0.005 50;
+    --popover-foreground: 0.25 0.02 35;
+    --primary: 0.65 0.18 35;
+    --primary-foreground: 0.98 0.01 45;
+    --secondary: 0.92 0.03 55;
+    --secondary-foreground: 0.35 0.02 35;
+    --muted: 0.95 0.02 50;
+    --muted-foreground: 0.5 0.02 35;
+    --accent: 0.75 0.15 45;
+    --accent-foreground: 0.98 0.01 45;
+    --destructive: 0.55 0.22 25;
+    --destructive-foreground: 0.98 0.01 45;
+    --border: 0.88 0.02 45;
+    --input: 0.88 0.02 45;
+    --ring: 0.65 0.18 35;
+    --chart-1: 0.65 0.18 35;
+    --chart-2: 0.75 0.15 45;
+    --chart-3: 0.55 0.12 55;
+    --chart-4: 0.7 0.16 40;
+    --chart-5: 0.6 0.14 50;
+    --sidebar: 0.98 0.01 45;
+    --sidebar-foreground: 0.25 0.02 35;
+    --sidebar-primary: 0.65 0.18 35;
+    --sidebar-primary-foreground: 0.98 0.01 45;
+    --sidebar-accent: 0.92 0.03 55;
+    --sidebar-accent-foreground: 0.35 0.02 35;
+    --sidebar-border: 0.88 0.02 45;
+    --sidebar-ring: 0.65 0.18 35;
+  }
 
-    .dark {
-        --background: 0.20 0.02 35;
-        --foreground: 0.95 0.01 45;
-        --card: 0.25 0.02 35;
-        --card-foreground: 0.95 0.01 45;
-        --popover: 0.25 0.02 35;
-        --popover-foreground: 0.95 0.01 45;
-        --primary: 0.75 0.15 45;
-        --primary-foreground: 0.20 0.02 35;
-        --secondary: 0.30 0.02 35;
-        --secondary-foreground: 0.95 0.01 45;
-        --muted: 0.30 0.02 35;
-        --muted-foreground: 0.65 0.02 40;
-        --accent: 0.65 0.18 35;
-        --accent-foreground: 0.95 0.01 45;
-        --destructive: 0.55 0.22 25;
-        --destructive-foreground: 0.95 0.01 45;
-        --border: 0.35 0.02 35;
-        --input: 0.35 0.02 35;
-        --ring: 0.75 0.15 45;
-        --chart-1: 0.75 0.15 45;
-        --chart-2: 0.65 0.18 35;
-        --chart-3: 0.55 0.12 55;
-        --chart-4: 0.70 0.16 40;
-        --chart-5: 0.60 0.14 50;
-        --sidebar: 0.25 0.02 35;
-        --sidebar-foreground: 0.95 0.01 45;
-        --sidebar-primary: 0.75 0.15 45;
-        --sidebar-primary-foreground: 0.20 0.02 35;
-        --sidebar-accent: 0.30 0.02 35;
-        --sidebar-accent-foreground: 0.95 0.01 45;
-        --sidebar-border: 0.35 0.02 35;
-        --sidebar-ring: 0.75 0.15 45;
-    }
+  .dark {
+    --background: 0.2 0.02 35;
+    --foreground: 0.95 0.01 45;
+    --card: 0.25 0.02 35;
+    --card-foreground: 0.95 0.01 45;
+    --popover: 0.25 0.02 35;
+    --popover-foreground: 0.95 0.01 45;
+    --primary: 0.75 0.15 45;
+    --primary-foreground: 0.2 0.02 35;
+    --secondary: 0.3 0.02 35;
+    --secondary-foreground: 0.95 0.01 45;
+    --muted: 0.3 0.02 35;
+    --muted-foreground: 0.65 0.02 40;
+    --accent: 0.65 0.18 35;
+    --accent-foreground: 0.95 0.01 45;
+    --destructive: 0.55 0.22 25;
+    --destructive-foreground: 0.95 0.01 45;
+    --border: 0.35 0.02 35;
+    --input: 0.35 0.02 35;
+    --ring: 0.75 0.15 45;
+    --chart-1: 0.75 0.15 45;
+    --chart-2: 0.65 0.18 35;
+    --chart-3: 0.55 0.12 55;
+    --chart-4: 0.7 0.16 40;
+    --chart-5: 0.6 0.14 50;
+    --sidebar: 0.25 0.02 35;
+    --sidebar-foreground: 0.95 0.01 45;
+    --sidebar-primary: 0.75 0.15 45;
+    --sidebar-primary-foreground: 0.2 0.02 35;
+    --sidebar-accent: 0.3 0.02 35;
+    --sidebar-accent-foreground: 0.95 0.01 45;
+    --sidebar-border: 0.35 0.02 35;
+    --sidebar-ring: 0.75 0.15 45;
+  }
 
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-        font-family: 'Inter', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
-    }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", "Noto Sans Devanagari", system-ui, -apple-system,
+      sans-serif;
+  }
 }
 
 @layer utilities {
-    .hindi-text {
-        font-family: 'Noto Sans Devanagari', 'Inter', system-ui, sans-serif;
-    }
+  .hindi-text {
+    font-family: "Noto Sans Devanagari", "Inter", system-ui, sans-serif;
+  }
 }

@@ -8,12 +8,20 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const Time = IDL.Int;
-export const Delivery = IDL.Record({
-  'deliveryDate' : Time,
-  'deliveryTime' : IDL.Text,
-  'orderId' : IDL.Nat,
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
 });
+export const DailyOrderRecord = IDL.Record({
+  'quantityDelivered' : IDL.Float64,
+  'date' : IDL.Text,
+  'amountCharged' : IDL.Float64,
+  'notes' : IDL.Opt(IDL.Text),
+  'recordId' : IDL.Nat,
+  'customerId' : IDL.Nat,
+});
+export const Time = IDL.Int;
 export const Product = IDL.Record({
   'id' : IDL.Nat,
   'name' : IDL.Text,
@@ -22,6 +30,7 @@ export const Product = IDL.Record({
 });
 export const Order = IDL.Record({
   'id' : IDL.Nat,
+  'requestedDeliveryDate' : IDL.Opt(Time),
   'status' : IDL.Text,
   'deliveryDate' : IDL.Opt(Time),
   'orderDate' : Time,
@@ -29,6 +38,27 @@ export const Order = IDL.Record({
   'customerId' : IDL.Nat,
   'phoneNumber' : IDL.Text,
   'product' : Product,
+});
+export const UserProfile = IDL.Record({
+  'name' : IDL.Text,
+  'email' : IDL.Opt(IDL.Text),
+});
+export const Delivery = IDL.Record({
+  'deliveryDate' : Time,
+  'deliveryTime' : IDL.Text,
+  'orderId' : IDL.Nat,
+});
+export const RegularCustomer = IDL.Record({
+  'pricePerLitre' : IDL.Float64,
+  'dailyMilkQuantity' : IDL.Float64,
+  'name' : IDL.Text,
+  'lastPaymentDate' : IDL.Opt(IDL.Text),
+  'isActive' : IDL.Bool,
+  'totalAmountDue' : IDL.Float64,
+  'address' : IDL.Text,
+  'customerId' : IDL.Nat,
+  'phone' : IDL.Text,
+  'amountReceived' : IDL.Float64,
 });
 export const http_header = IDL.Record({
   'value' : IDL.Text,
@@ -50,28 +80,97 @@ export const TransformationOutput = IDL.Record({
 });
 
 export const idlService = IDL.Service({
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addDailyOrderRecord' : IDL.Func(
+      [IDL.Nat, IDL.Text, IDL.Float64, IDL.Float64, IDL.Opt(IDL.Text)],
+      [IDL.Nat],
+      [],
+    ),
+  'addRegularCustomer' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Float64, IDL.Float64],
+      [IDL.Nat],
+      [],
+    ),
+  'adminLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], ['query']),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'cancelOrder' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'changeAdminCredentials' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Bool],
+      [],
+    ),
+  'deleteDailyOrderRecord' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'getAllDailyOrderRecords' : IDL.Func(
+      [],
+      [IDL.Vec(DailyOrderRecord)],
+      ['query'],
+    ),
+  'getAllOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getDailyOrderRecordsByCustomer' : IDL.Func(
+      [IDL.Nat],
+      [IDL.Vec(DailyOrderRecord)],
+      ['query'],
+    ),
   'getDeliverySchedule' : IDL.Func([IDL.Nat], [IDL.Opt(Delivery)], ['query']),
   'getOrderHistory' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
-  'placeOrder' : IDL.Func([IDL.Nat, Product, IDL.Nat, IDL.Text], [IDL.Nat], []),
+  'getRegularCustomers' : IDL.Func([], [IDL.Vec(RegularCustomer)], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'hasAdminCredentials' : IDL.Func([], [IDL.Bool], ['query']),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'placeOrder' : IDL.Func(
+      [IDL.Nat, Product, IDL.Nat, IDL.Text, IDL.Opt(Time)],
+      [IDL.Nat],
+      [],
+    ),
+  'recordDailyDelivery' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'recordPayment' : IDL.Func([IDL.Nat, IDL.Float64, IDL.Text], [IDL.Bool], []),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'scheduleDelivery' : IDL.Func([IDL.Nat, Time, IDL.Text], [IDL.Bool], []),
+  'setAdminCredentials' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
   'transform' : IDL.Func(
       [TransformationInput],
       [TransformationOutput],
       ['query'],
     ),
   'updateOrderStatus' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Bool], []),
+  'updateRegularCustomer' : IDL.Func(
+      [
+        IDL.Nat,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Float64,
+        IDL.Float64,
+        IDL.Bool,
+      ],
+      [IDL.Bool],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const Time = IDL.Int;
-  const Delivery = IDL.Record({
-    'deliveryDate' : Time,
-    'deliveryTime' : IDL.Text,
-    'orderId' : IDL.Nat,
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
   });
+  const DailyOrderRecord = IDL.Record({
+    'quantityDelivered' : IDL.Float64,
+    'date' : IDL.Text,
+    'amountCharged' : IDL.Float64,
+    'notes' : IDL.Opt(IDL.Text),
+    'recordId' : IDL.Nat,
+    'customerId' : IDL.Nat,
+  });
+  const Time = IDL.Int;
   const Product = IDL.Record({
     'id' : IDL.Nat,
     'name' : IDL.Text,
@@ -80,6 +179,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const Order = IDL.Record({
     'id' : IDL.Nat,
+    'requestedDeliveryDate' : IDL.Opt(Time),
     'status' : IDL.Text,
     'deliveryDate' : IDL.Opt(Time),
     'orderDate' : Time,
@@ -87,6 +187,27 @@ export const idlFactory = ({ IDL }) => {
     'customerId' : IDL.Nat,
     'phoneNumber' : IDL.Text,
     'product' : Product,
+  });
+  const UserProfile = IDL.Record({
+    'name' : IDL.Text,
+    'email' : IDL.Opt(IDL.Text),
+  });
+  const Delivery = IDL.Record({
+    'deliveryDate' : Time,
+    'deliveryTime' : IDL.Text,
+    'orderId' : IDL.Nat,
+  });
+  const RegularCustomer = IDL.Record({
+    'pricePerLitre' : IDL.Float64,
+    'dailyMilkQuantity' : IDL.Float64,
+    'name' : IDL.Text,
+    'lastPaymentDate' : IDL.Opt(IDL.Text),
+    'isActive' : IDL.Bool,
+    'totalAmountDue' : IDL.Float64,
+    'address' : IDL.Text,
+    'customerId' : IDL.Nat,
+    'phone' : IDL.Text,
+    'amountReceived' : IDL.Float64,
   });
   const http_header = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
   const http_request_result = IDL.Record({
@@ -105,21 +226,82 @@ export const idlFactory = ({ IDL }) => {
   });
   
   return IDL.Service({
-    'cancelOrder' : IDL.Func([IDL.Nat], [IDL.Bool], []),
-    'getDeliverySchedule' : IDL.Func([IDL.Nat], [IDL.Opt(Delivery)], ['query']),
-    'getOrderHistory' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
-    'placeOrder' : IDL.Func(
-        [IDL.Nat, Product, IDL.Nat, IDL.Text],
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addDailyOrderRecord' : IDL.Func(
+        [IDL.Nat, IDL.Text, IDL.Float64, IDL.Float64, IDL.Opt(IDL.Text)],
         [IDL.Nat],
         [],
       ),
+    'addRegularCustomer' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Float64, IDL.Float64],
+        [IDL.Nat],
+        [],
+      ),
+    'adminLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], ['query']),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'cancelOrder' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'changeAdminCredentials' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Bool],
+        [],
+      ),
+    'deleteDailyOrderRecord' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'getAllDailyOrderRecords' : IDL.Func(
+        [],
+        [IDL.Vec(DailyOrderRecord)],
+        ['query'],
+      ),
+    'getAllOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getDailyOrderRecordsByCustomer' : IDL.Func(
+        [IDL.Nat],
+        [IDL.Vec(DailyOrderRecord)],
+        ['query'],
+      ),
+    'getDeliverySchedule' : IDL.Func([IDL.Nat], [IDL.Opt(Delivery)], ['query']),
+    'getOrderHistory' : IDL.Func([IDL.Nat], [IDL.Vec(Order)], ['query']),
+    'getRegularCustomers' : IDL.Func([], [IDL.Vec(RegularCustomer)], ['query']),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'hasAdminCredentials' : IDL.Func([], [IDL.Bool], ['query']),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'placeOrder' : IDL.Func(
+        [IDL.Nat, Product, IDL.Nat, IDL.Text, IDL.Opt(Time)],
+        [IDL.Nat],
+        [],
+      ),
+    'recordDailyDelivery' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'recordPayment' : IDL.Func(
+        [IDL.Nat, IDL.Float64, IDL.Text],
+        [IDL.Bool],
+        [],
+      ),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'scheduleDelivery' : IDL.Func([IDL.Nat, Time, IDL.Text], [IDL.Bool], []),
+    'setAdminCredentials' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'transform' : IDL.Func(
         [TransformationInput],
         [TransformationOutput],
         ['query'],
       ),
     'updateOrderStatus' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Bool], []),
+    'updateRegularCustomer' : IDL.Func(
+        [
+          IDL.Nat,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Float64,
+          IDL.Float64,
+          IDL.Bool,
+        ],
+        [IDL.Bool],
+        [],
+      ),
   });
 };
 

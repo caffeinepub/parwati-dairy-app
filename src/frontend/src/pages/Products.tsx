@@ -1,36 +1,36 @@
-import { useNavigate } from '@tanstack/react-router';
-import { Milk, Package, Droplet } from 'lucide-react';
+import { useNavigate } from "@tanstack/react-router";
+import { Droplet, Milk, Package } from "lucide-react";
 
 export default function Products() {
   const navigate = useNavigate();
 
   const products = [
     {
-      name: 'Milk',
-      nameHindi: 'दूध',
+      name: "Milk",
+      nameHindi: "दूध",
       price: 60,
-      unit: 'Litre',
+      unit: "Litre",
       icon: Milk,
-      description: 'Fresh, pure cow milk delivered daily',
-      gradient: 'from-blue-50 to-cyan-50',
+      description: "Fresh, pure cow milk delivered daily",
+      gradient: "from-blue-50 to-cyan-50",
     },
     {
-      name: 'Paneer',
-      nameHindi: 'पनीर',
+      name: "Paneer",
+      nameHindi: "पनीर",
       price: 400,
-      unit: 'Kg',
+      unit: "Kg",
       icon: Package,
-      description: 'Soft, fresh homemade paneer',
-      gradient: 'from-amber-50 to-yellow-50',
+      description: "Soft, fresh homemade paneer",
+      gradient: "from-amber-50 to-yellow-50",
     },
     {
-      name: 'Ghee',
-      nameHindi: 'देसी घी',
+      name: "Ghee",
+      nameHindi: "देसी घी",
       price: 1500,
-      unit: 'Kg',
+      unit: "Kg",
       icon: Droplet,
-      description: 'Pure desi ghee made from cow milk',
-      gradient: 'from-orange-50 to-amber-50',
+      description: "Pure desi ghee made from cow milk",
+      gradient: "from-orange-50 to-amber-50",
     },
   ];
 
@@ -67,7 +67,9 @@ export default function Products() {
                     key={product.name}
                     className="bg-card rounded-2xl shadow-lg overflow-hidden border border-border hover:shadow-warm transition-all duration-300 hover:scale-105"
                   >
-                    <div className={`bg-gradient-to-br ${product.gradient} p-8 flex justify-center`}>
+                    <div
+                      className={`bg-gradient-to-br ${product.gradient} p-8 flex justify-center`}
+                    >
                       <div className="p-6 bg-white/80 rounded-full shadow-md">
                         <Icon className="h-16 w-16 text-primary" />
                       </div>
@@ -91,9 +93,10 @@ export default function Products() {
                         </span>
                       </div>
                       <button
+                        type="button"
                         onClick={() =>
                           navigate({
-                            to: '/order',
+                            to: "/order",
                             search: { product: product.name },
                           })
                         }
@@ -124,7 +127,9 @@ export default function Products() {
                   className="flex items-center justify-between py-3 border-b border-border last:border-0"
                 >
                   <div>
-                    <span className="font-semibold text-lg">{product.name}</span>
+                    <span className="font-semibold text-lg">
+                      {product.name}
+                    </span>
                     <span className="text-muted-foreground hindi-text ml-2">
                       ({product.nameHindi})
                     </span>

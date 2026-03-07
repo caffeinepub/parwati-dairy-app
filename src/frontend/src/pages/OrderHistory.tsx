@@ -1,57 +1,85 @@
-import { Package, Calendar, CheckCircle, Clock, XCircle, Truck } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useOrderHistory, useDeliverySchedule } from '../hooks/useQueries';
-import { useNavigate } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button';
-import type { Order } from '../backend';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  Package,
+  ShieldAlert,
+  Truck,
+  XCircle,
+} from "lucide-react";
+import type { Order } from "../backend";
+import {
+  useAllOrders,
+  useDeliverySchedule,
+  useIsAdmin,
+  useOrderHistory,
+} from "../hooks/useQueries";
 
 export default function OrderHistory() {
   const navigate = useNavigate();
-  // For demo purposes, using customerId = 1
-  // In production, this would come from authenticated user context
+  const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
+
+  // For non-admin: use customerId = 1 (demo)
   const customerId = 1;
-  const { data: orders, isLoading, error } = useOrderHistory(customerId);
+  const {
+    data: myOrders,
+    isLoading: myOrdersLoading,
+    error: myOrdersError,
+  } = useOrderHistory(customerId);
+  const {
+    data: allOrders,
+    isLoading: allOrdersLoading,
+    error: allOrdersError,
+  } = useAllOrders(!!isAdmin);
+
+  const orders = isAdmin ? allOrders : myOrders;
+  const isLoading =
+    adminLoading || (isAdmin ? allOrdersLoading : myOrdersLoading);
+  const error = isAdmin ? allOrdersError : myOrdersError;
 
   const formatDate = (timestamp: bigint) => {
     try {
-      // Convert nanoseconds to milliseconds
       const date = new Date(Number(timestamp / 1_000_000n));
-      return date.toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
+      return date.toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
       });
-    } catch (e) {
-      console.error('Error formatting date:', e);
-      return 'Invalid date';
+    } catch {
+      return "Invalid date";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'placed':
+      case "placed":
         return <Clock className="h-4 w-4" />;
-      case 'delivered':
+      case "delivered":
         return <CheckCircle className="h-4 w-4" />;
-      case 'canceled':
+      case "canceled":
         return <XCircle className="h-4 w-4" />;
       default:
         return <Package className="h-4 w-4" />;
     }
   };
 
-  const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+  const getStatusVariant = (
+    status: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
     switch (status.toLowerCase()) {
-      case 'placed':
-        return 'default';
-      case 'delivered':
-        return 'secondary';
-      case 'canceled':
-        return 'destructive';
+      case "placed":
+        return "default";
+      case "delivered":
+        return "secondary";
+      case "canceled":
+        return "destructive";
       default:
-        return 'outline';
+        return "outline";
     }
   };
 
@@ -67,7 +95,7 @@ export default function OrderHistory() {
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
                 Order History
               </h1>
-              <p className="text-lg text-muted-foreground">Loading your orders...</p>
+              <p className="text-lg text-muted-foreground">Loading orders...</p>
             </div>
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
@@ -103,9 +131,14 @@ export default function OrderHistory() {
                     Error loading order history
                   </p>
                   <p className="text-sm text-muted-foreground mb-4">
-                    {error instanceof Error ? error.message : 'Please try again later.'}
+                    {error instanceof Error
+                      ? error.message
+                      : "Please try again later."}
                   </p>
-                  <Button onClick={() => window.location.reload()} variant="outline">
+                  <Button
+                    onClick={() => window.location.reload()}
+                    variant="outline"
+                  >
                     Retry
                   </Button>
                 </div>
@@ -130,8 +163,16 @@ export default function OrderHistory() {
               Order History
             </h1>
             <p className="text-lg text-muted-foreground">
-              View all your past orders and their status
+              {isAdmin
+                ? "All customer orders (Admin View)"
+                : "View all your past orders and their status"}
             </p>
+            {isAdmin && (
+              <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 bg-primary/10 rounded-full text-sm text-primary font-medium">
+                <ShieldAlert className="h-3.5 w-3.5" />
+                Admin View — Showing all orders
+              </div>
+            )}
           </div>
 
           {/* Orders List */}
@@ -143,22 +184,27 @@ export default function OrderHistory() {
                   No Orders Yet
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  You haven't placed any orders yet. Start shopping now!
+                  {isAdmin
+                    ? "No orders have been placed yet."
+                    : "You haven't placed any orders yet. Start shopping now!"}
                 </p>
-                <Button onClick={() => navigate({ to: '/products' })}>
-                  Browse Products
-                </Button>
+                {!isAdmin && (
+                  <Button onClick={() => navigate({ to: "/products" })}>
+                    Browse Products
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-4">
               {orders.map((order) => (
-                <OrderCard 
-                  key={Number(order.id)} 
-                  order={order} 
-                  formatDate={formatDate} 
-                  getStatusIcon={getStatusIcon} 
-                  getStatusVariant={getStatusVariant} 
+                <OrderCard
+                  key={Number(order.id)}
+                  order={order}
+                  formatDate={formatDate}
+                  getStatusIcon={getStatusIcon}
+                  getStatusVariant={getStatusVariant}
+                  showCustomerId={!!isAdmin}
                 />
               ))}
             </div>
@@ -168,15 +214,17 @@ export default function OrderHistory() {
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               variant="outline"
-              onClick={() => navigate({ to: '/delivery-schedule' })}
+              onClick={() => navigate({ to: "/delivery-schedule" })}
             >
               <Truck className="h-4 w-4 mr-2" />
               View Delivery Schedule
             </Button>
-            <Button onClick={() => navigate({ to: '/order' })}>
-              <Package className="h-4 w-4 mr-2" />
-              Place New Order
-            </Button>
+            {!isAdmin && (
+              <Button onClick={() => navigate({ to: "/order" })}>
+                <Package className="h-4 w-4 mr-2" />
+                Place New Order
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -188,11 +236,22 @@ interface OrderCardProps {
   order: Order;
   formatDate: (timestamp: bigint) => string;
   getStatusIcon: (status: string) => React.ReactElement;
-  getStatusVariant: (status: string) => "default" | "secondary" | "destructive" | "outline";
+  getStatusVariant: (
+    status: string,
+  ) => "default" | "secondary" | "destructive" | "outline";
+  showCustomerId?: boolean;
 }
 
-function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: OrderCardProps) {
-  const { data: delivery, isLoading: deliveryLoading } = useDeliverySchedule(order.id);
+function OrderCard({
+  order,
+  formatDate,
+  getStatusIcon,
+  getStatusVariant,
+  showCustomerId,
+}: OrderCardProps) {
+  const { data: delivery, isLoading: deliveryLoading } = useDeliverySchedule(
+    order.id,
+  );
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -201,8 +260,16 @@ function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: Order
           <CardTitle className="text-lg flex items-center gap-2">
             <Package className="h-5 w-5 text-primary" />
             Order #{Number(order.id)}
+            {showCustomerId && (
+              <span className="text-sm font-normal text-muted-foreground ml-1">
+                (Customer #{Number(order.customerId)})
+              </span>
+            )}
           </CardTitle>
-          <Badge variant={getStatusVariant(order.status)} className="flex items-center gap-1 w-fit">
+          <Badge
+            variant={getStatusVariant(order.status)}
+            className="flex items-center gap-1 w-fit"
+          >
             {getStatusIcon(order.status)}
             {order.status}
           </Badge>
@@ -213,11 +280,15 @@ function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: Order
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Product</p>
-              <p className="font-semibold text-foreground">{order.product?.name || 'N/A'}</p>
+              <p className="font-semibold text-foreground">
+                {order.product?.name || "N/A"}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Quantity</p>
-              <p className="font-semibold text-foreground">{Number(order.quantity)}</p>
+              <p className="font-semibold text-foreground">
+                {Number(order.quantity)}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Order Date</p>
@@ -228,12 +299,14 @@ function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: Order
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Price</p>
-              <p className="font-semibold text-foreground">₹{Number(order.product?.price || 0)}</p>
+              <p className="font-semibold text-foreground">
+                ₹{Number(order.product?.price || 0)}
+              </p>
             </div>
           </div>
 
           {/* Delivery Schedule Info */}
-          {order.status.toLowerCase() === 'placed' && (
+          {order.status.toLowerCase() === "placed" && (
             <div className="mt-4 pt-4 border-t border-border">
               {deliveryLoading ? (
                 <div className="flex items-center gap-2 text-muted-foreground">
@@ -248,7 +321,8 @@ function OrderCard({ order, formatDate, getStatusIcon, getStatusVariant }: Order
                       Scheduled Delivery
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {formatDate(delivery.deliveryDate)} at {delivery.deliveryTime}
+                      {formatDate(delivery.deliveryDate)} at{" "}
+                      {delivery.deliveryTime}
                     </p>
                   </div>
                 </div>

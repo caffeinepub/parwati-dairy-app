@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 interface OrderData {
   name: string;
   phone: string;
@@ -6,9 +8,17 @@ interface OrderData {
   quantity: string;
 }
 
-const WHATSAPP_NUMBER = '918553965714';
+const WHATSAPP_NUMBER = "918553965714";
 
-export function sendWhatsAppOrder(orderData: OrderData): void {
+export function sendWhatsAppOrder(
+  orderData: OrderData,
+  deliveryDate?: Date,
+): void {
+  // Format the delivery date in a readable format
+  const formattedDeliveryDate = deliveryDate
+    ? format(deliveryDate, "EEEE, MMMM d, yyyy")
+    : "Not specified";
+
   const message = `Hello Parwati Dairy,
 
 I want to order:
@@ -19,11 +29,12 @@ Quantity: ${orderData.quantity}
 Name: ${orderData.name}
 Address: ${orderData.address}
 Phone: ${orderData.phone}
+Delivery Date: ${formattedDeliveryDate}
 
 Delivery: Yes`;
 
   const encodedMessage = encodeURIComponent(message);
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
 
-  window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 }

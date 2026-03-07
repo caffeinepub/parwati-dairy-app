@@ -1,14 +1,19 @@
-# Specification
+# Parwati Dairy App
 
-## Summary
-**Goal:** Add daily order records for regular customers and restrict admin-only pages/data using Internet Identity principal-based authentication.
+## Current State
+The app has a Motoko backend with admin credential setup via `setAdminCredentials`. The current implementation requires the caller to already be an admin in the access control system before they can create admin credentials — making first-time setup impossible (chicken-and-egg problem). Users see an error when trying to set up their admin account.
 
-**Planned changes:**
-- Add `DailyOrderRecord` type to the backend with fields: recordId, customerId, date, quantityDelivered, amountCharged, and optional notes
-- Implement backend functions: `addDailyOrderRecord`, `getDailyOrderRecordsByCustomer`, `getAllDailyOrderRecords`, and `deleteDailyOrderRecord`, stored in stable HashMap with auto-incrementing recordId
-- Add admin principal storage to the backend with an `isAdmin` query function; gate `getRegularCustomers`, `addRegularCustomer`, `updateRegularCustomer`, `recordDailyDelivery`, `recordPayment`, `getAllDailyOrderRecords`, `deleteDailyOrderRecord`, and `getAllOrders` to admin-only callers
-- Add TanStack Query hooks: `useAddDailyOrderRecord`, `useDailyOrderRecordsByCustomer`, `useDeleteDailyOrderRecord`, and `useIsAdmin`
-- Add a "Daily Orders" button to each customer card on the RegularCustomers page that opens a dialog showing that customer's daily order records in a table (Date, Quantity, Amount, Notes) with an inline "Add Daily Record" form and per-row delete buttons
-- Wrap the RegularCustomers page and OrderHistory page with an admin access guard; non-admin users see an "Admin Access Required" message with a login button
+## Requested Changes (Diff)
 
-**User-visible outcome:** Admins can log in with Internet Identity to access customer details, view and manage daily order records per customer, and see full order history. Non-admin users are shown an access-denied screen on protected pages.
+### Add
+- Nothing new to add
+
+### Modify
+- `setAdminCredentials` backend function: Remove the access control admin check so that first-time setup is allowed for any caller when no credentials exist yet. Once credentials are set, the function returns false (user must use `changeAdminCredentials` to update).
+
+### Remove
+- The `AccessControl.isAdmin` guard from `setAdminCredentials`
+
+## Implementation Plan
+1. Regenerate the Motoko backend with the fixed `setAdminCredentials` function that allows first-time setup without requiring access control admin status.
+2. All other backend logic remains identical (order management, customer records, delivery scheduling, daily order records, change password flow, etc.).

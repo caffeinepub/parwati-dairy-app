@@ -1,9 +1,9 @@
-import { Phone, MapPin, Mail } from 'lucide-react';
+import { Mail, MapPin, Phone } from "lucide-react";
 
 export default function Contact() {
   const phoneNumbers = [
-    { number: '8553965714', primary: true },
-    { number: '6205017829', primary: false },
+    { number: "8553965714", primary: true },
+    { number: "6205017829", primary: false },
   ];
 
   return (
@@ -33,9 +33,13 @@ export default function Contact() {
                     Our Location
                   </h3>
                   <address className="not-italic text-muted-foreground leading-relaxed">
-                    <strong className="text-foreground block mb-2">Parwati Dairy</strong>
-                    Srirampath Kadma Road<br />
-                    Ramnagar, Hazaribagh<br />
+                    <strong className="text-foreground block mb-2">
+                      Parwati Dairy
+                    </strong>
+                    Srirampath Kadma Road
+                    <br />
+                    Ramnagar, Hazaribagh
+                    <br />
                     Jharkhand – 825301
                   </address>
                 </div>
@@ -117,8 +121,10 @@ export default function Contact() {
                   Visit Us
                 </h3>
                 <p className="text-muted-foreground">
-                  Srirampath Kadma Road<br />
-                  Ramnagar, Hazaribagh<br />
+                  Srirampath Kadma Road
+                  <br />
+                  Ramnagar, Hazaribagh
+                  <br />
                   Jharkhand – 825301
                 </p>
               </div>
@@ -130,7 +136,7 @@ export default function Contact() {
               </p>
               <a
                 href={`https://wa.me/918553965714?text=${encodeURIComponent(
-                  'Hello Parwati Dairy, I have a question about your products.'
+                  "Hello Parwati Dairy, I have a question about your products.",
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

@@ -1,5 +1,7 @@
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
+import Time "mo:core/Time";
+import Principal "mo:core/Principal";
 
 module {
   type Product = {
@@ -14,36 +16,64 @@ module {
     customerId : Nat;
     product : Product;
     quantity : Nat;
-    orderDate : Int;
+    orderDate : Time.Time;
     status : Text;
-    deliveryDate : ?Int;
-  };
-
-  type OldActor = {
-    orders : Map.Map<Nat, Order>;
-  };
-
-  type NewOrder = {
-    id : Nat;
-    customerId : Nat;
-    product : Product;
-    quantity : Nat;
-    orderDate : Int;
-    status : Text;
-    deliveryDate : ?Int;
+    deliveryDate : ?Time.Time;
     phoneNumber : Text;
+    requestedDeliveryDate : ?Time.Time;
   };
 
-  type NewActor = {
-    orders : Map.Map<Nat, NewOrder>;
+  type Delivery = {
+    orderId : Nat;
+    deliveryDate : Time.Time;
+    deliveryTime : Text;
   };
 
-  public func run(old : OldActor) : NewActor {
-    let newOrders = old.orders.map<Nat, Order, NewOrder>(
-      func(_id, oldOrder) {
-        { oldOrder with phoneNumber = "" };
-      }
-    );
-    { orders = newOrders };
+  type RegularCustomer = {
+    customerId : Nat;
+    name : Text;
+    phone : Text;
+    address : Text;
+    dailyMilkQuantity : Float;
+    pricePerLitre : Float;
+    totalAmountDue : Float;
+    amountReceived : Float;
+    lastPaymentDate : ?Text;
+    isActive : Bool;
+  };
+
+  type DailyOrderRecord = {
+    recordId : Nat;
+    customerId : Nat;
+    date : Text;
+    quantityDelivered : Float;
+    amountCharged : Float;
+    notes : ?Text;
+  };
+
+  type UserProfile = {
+    name : Text;
+    email : ?Text;
+  };
+
+  type AdminCredentials = {
+    username : Text;
+    passwordHash : Text;
+  };
+
+  type Actor = {
+    var nextOrderId : Nat;
+    var nextCustomerId : Nat;
+    var nextRecordId : Nat;
+    var adminCredentials : ?AdminCredentials;
+    orders : Map.Map<Nat, Order>;
+    deliveries : Map.Map<Nat, Delivery>;
+    regularCustomers : Map.Map<Nat, RegularCustomer>;
+    dailyOrderRecords : Map.Map<Nat, DailyOrderRecord>;
+    userProfiles : Map.Map<Principal, UserProfile>;
+  };
+
+  public func run(old : Actor) : Actor {
+    old;
   };
 };

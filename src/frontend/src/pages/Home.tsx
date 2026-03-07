@@ -1,36 +1,36 @@
-import { useNavigate } from '@tanstack/react-router';
-import { Milk, Package, Droplet, Phone } from 'lucide-react';
+import { useNavigate } from "@tanstack/react-router";
+import { Droplet, Milk, Package, Phone } from "lucide-react";
 
 export default function Home() {
   const navigate = useNavigate();
 
   const products = [
     {
-      name: 'Milk Order',
+      name: "Milk Order",
       icon: Milk,
-      path: '/order',
-      search: { product: 'Milk' },
-      gradient: 'from-amber-100 to-orange-100',
+      path: "/order",
+      search: { product: "Milk" },
+      gradient: "from-amber-100 to-orange-100",
     },
     {
-      name: 'Paneer Order',
+      name: "Paneer Order",
       icon: Package,
-      path: '/order',
-      search: { product: 'Paneer' },
-      gradient: 'from-yellow-100 to-amber-100',
+      path: "/order",
+      search: { product: "Paneer" },
+      gradient: "from-yellow-100 to-amber-100",
     },
     {
-      name: 'Ghee Order',
+      name: "Ghee Order",
       icon: Droplet,
-      path: '/order',
-      search: { product: 'Ghee' },
-      gradient: 'from-orange-100 to-yellow-100',
+      path: "/order",
+      search: { product: "Ghee" },
+      gradient: "from-orange-100 to-yellow-100",
     },
     {
-      name: 'Contact',
+      name: "Contact",
       icon: Phone,
-      path: '/contact',
-      gradient: 'from-amber-100 to-yellow-100',
+      path: "/contact",
+      gradient: "from-amber-100 to-yellow-100",
     },
   ];
 
@@ -52,7 +52,8 @@ export default function Home() {
               शुद्ध दूध • पनीर • देसी घी
             </p>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Fresh, pure dairy products delivered to your doorstep. Quality you can trust, taste you'll love.
+              Fresh, pure dairy products delivered to your doorstep. Quality you
+              can trust, taste you'll love.
             </p>
           </div>
         </div>
@@ -67,6 +68,7 @@ export default function Home() {
                 const Icon = product.icon;
                 return (
                   <button
+                    type="button"
                     key={product.name}
                     onClick={() =>
                       navigate({
