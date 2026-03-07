@@ -33,7 +33,9 @@ export function useHasAdminCredentials() {
       }
     },
     enabled: !!actor && !isFetching,
-    staleTime: 30000,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     retry: 1,
   });
 }
@@ -62,6 +64,24 @@ export function useAdminLogin() {
     mutationFn: async (params: { username: string; passwordHash: string }) => {
       if (!actor) throw new Error("Actor not initialized");
       return actor.adminLogin(params.username, params.passwordHash);
+    },
+  });
+}
+
+// Mutation to reset admin password using verification code
+export function useResetAdminPassword() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async (params: {
+      verificationCode: string;
+      newPasswordHash: string;
+    }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.resetAdminPassword(
+        params.verificationCode,
+        params.newPasswordHash,
+      );
     },
   });
 }

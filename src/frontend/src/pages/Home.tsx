@@ -41,9 +41,17 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <img
-              src="/assets/generated/parwati-dairy-logo.dim_800x800.png"
+              src="/assets/IMG_3581.jpeg"
               alt="Parwati Dairy Logo"
               className="max-w-xs sm:max-w-sm md:max-w-md mx-auto mb-6 w-full h-auto object-contain"
+              onError={(e) => {
+                const img = e.currentTarget;
+                if (!img.dataset.fallback) {
+                  img.dataset.fallback = "1";
+                  img.src =
+                    "/assets/generated/parwati-dairy-logo.dim_800x800.png";
+                }
+              }}
             />
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
               Parwati Dairy

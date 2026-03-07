@@ -40,9 +40,17 @@ export default function Layout() {
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
               <img
-                src="/assets/generated/parwati-dairy-logo.dim_800x800.png"
+                src="/assets/uploads/f05fb620-dd02-4626-b224-3dc8d1958cf2-1-1.jpg"
                 alt="Parwati Dairy"
-                className="h-12 sm:h-14 w-auto object-contain"
+                className="h-12 sm:h-14 w-auto object-contain rounded-full"
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  if (!img.dataset.fallback) {
+                    img.dataset.fallback = "1";
+                    img.src =
+                      "/assets/generated/parwati-dairy-logo.dim_800x800.png";
+                  }
+                }}
               />
               <div className="text-left">
                 <h1 className="text-lg font-bold text-foreground">

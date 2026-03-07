@@ -182,6 +182,7 @@ export interface backendInterface {
     placeOrder(customerId: bigint, product: Product, quantity: bigint, phoneNumber: string, requestedDeliveryDate: Time | null): Promise<bigint>;
     recordDailyDelivery(customerId: bigint): Promise<boolean>;
     recordPayment(customerId: bigint, amount: number, paymentDate: string): Promise<boolean>;
+    resetAdminPassword(verificationCode: string, newPasswordHash: string): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     scheduleDelivery(orderId: bigint, deliveryDate: Time, deliveryTime: string): Promise<boolean>;
     setAdminCredentials(username: string, passwordHash: string): Promise<boolean>;
@@ -497,6 +498,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.recordPayment(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async resetAdminPassword(arg0: string, arg1: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.resetAdminPassword(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.resetAdminPassword(arg0, arg1);
             return result;
         }
     }
