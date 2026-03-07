@@ -10,7 +10,9 @@ import AccessControl "authorization/access-control";
 import Iter "mo:core/Iter";
 import Text "mo:core/Text";
 import Runtime "mo:core/Runtime";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   public type Product = {
     id : Nat;
@@ -131,6 +133,10 @@ actor {
     newUsername : Text,
     newPasswordHash : Text,
   ) : async Bool {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can change admin credentials");
+    };
+
     switch (adminCredentials) {
       case (null) { false };
       case (?credentials) {
@@ -147,21 +153,21 @@ actor {
 
   public shared ({ caller }) func resetAdminPassword(
     verificationCode : Text,
+    newUsername : Text,
     newPasswordHash : Text,
   ) : async Bool {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can reset admin password");
+    };
+
     if (verificationCode != "5714") {
       return false;
     };
-    switch (adminCredentials) {
-      case (null) { false };
-      case (?credentials) {
-        adminCredentials := ?{
-          username = credentials.username;
-          passwordHash = newPasswordHash;
-        };
-        true;
-      };
+    adminCredentials := ?{
+      username = newUsername;
+      passwordHash = newPasswordHash;
     };
+    true;
   };
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {

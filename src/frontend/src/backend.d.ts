@@ -99,7 +99,7 @@ export interface backendInterface {
     placeOrder(customerId: bigint, product: Product, quantity: bigint, phoneNumber: string, requestedDeliveryDate: Time | null): Promise<bigint>;
     recordDailyDelivery(customerId: bigint): Promise<boolean>;
     recordPayment(customerId: bigint, amount: number, paymentDate: string): Promise<boolean>;
-    resetAdminPassword(verificationCode: string, newPasswordHash: string): Promise<boolean>;
+    resetAdminPassword(verificationCode: string, newUsername: string, newPasswordHash: string): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     scheduleDelivery(orderId: bigint, deliveryDate: Time, deliveryTime: string): Promise<boolean>;
     setAdminCredentials(username: string, passwordHash: string): Promise<boolean>;

@@ -17,7 +17,6 @@ import {
   Loader2,
   LogIn,
   LogOut,
-  Phone,
   RotateCcw,
   Shield,
   UserPlus,
@@ -183,6 +182,7 @@ function ResetPasswordForm({
   const resetPassword = useResetAdminPassword();
 
   const [code, setCode] = useState("");
+  const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -194,6 +194,10 @@ function ResetPasswordForm({
 
     if (!code.trim()) {
       setError("Please enter the verification code.");
+      return;
+    }
+    if (!newUsername.trim() || newUsername.trim().length < 3) {
+      setError("Username must be at least 3 characters.");
       return;
     }
     if (newPassword.length < 6) {
@@ -209,15 +213,16 @@ function ResetPasswordForm({
       const hash = await hashPassword(newPassword);
       const ok = await resetPassword.mutateAsync({
         verificationCode: code.trim(),
+        newUsername: newUsername.trim(),
         newPasswordHash: hash,
       });
       if (ok) {
         onBack(
-          "Password reset successfully! Please log in with your new password.",
+          "Password reset successfully! Please log in with your new username and password.",
         );
       } else {
         setError(
-          "Invalid verification code. Please contact 8553965714 to get your code.",
+          "Invalid verification code. Please enter the correct code to reset.",
         );
       }
     } catch {
@@ -231,29 +236,29 @@ function ResetPasswordForm({
       className="space-y-4"
       data-ocid="admin.reset_password.dialog"
     >
-      {/* Contact info */}
-      <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 space-y-1">
-        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-          <Phone className="h-4 w-4 text-primary shrink-0" />
-          <span>Get your verification code</span>
-        </div>
-        <p className="text-xs text-muted-foreground pl-6">
-          Call or WhatsApp{" "}
-          <span className="font-semibold text-foreground">8553965714</span> to
-          receive your reset code.
-        </p>
-      </div>
-
       <div className="space-y-1.5">
         <Label htmlFor="reset-code">Verification Code</Label>
         <Input
           id="reset-code"
-          placeholder="Enter 4-digit code"
+          placeholder="Enter verification code"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           maxLength={10}
           required
           data-ocid="admin.reset_password.input"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="reset-username">New Username</Label>
+        <Input
+          id="reset-username"
+          autoComplete="username"
+          placeholder="Set a new username"
+          value={newUsername}
+          onChange={(e) => setNewUsername(e.target.value)}
+          required
+          data-ocid="admin.reset_password.username_input"
         />
       </div>
 

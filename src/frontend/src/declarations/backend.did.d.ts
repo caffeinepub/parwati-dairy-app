@@ -107,7 +107,7 @@ export interface _SERVICE {
   >,
   'recordDailyDelivery' : ActorMethod<[bigint], boolean>,
   'recordPayment' : ActorMethod<[bigint, number, string], boolean>,
-  'resetAdminPassword' : ActorMethod<[string, string], boolean>,
+  'resetAdminPassword' : ActorMethod<[string, string, string], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'scheduleDelivery' : ActorMethod<[bigint, Time, string], boolean>,
   'setAdminCredentials' : ActorMethod<[string, string], boolean>,

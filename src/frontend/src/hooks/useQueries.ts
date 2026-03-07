@@ -75,11 +75,13 @@ export function useResetAdminPassword() {
   return useMutation({
     mutationFn: async (params: {
       verificationCode: string;
+      newUsername: string;
       newPasswordHash: string;
     }) => {
       if (!actor) throw new Error("Actor not initialized");
       return actor.resetAdminPassword(
         params.verificationCode,
+        params.newUsername,
         params.newPasswordHash,
       );
     },

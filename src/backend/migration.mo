@@ -1,35 +1,36 @@
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
-import Time "mo:core/Time";
+import List "mo:core/List";
+import Float "mo:core/Float";
 import Principal "mo:core/Principal";
 
 module {
-  type Product = {
+  public type Product = {
     id : Nat;
     name : Text;
     quantity : Nat;
     price : Nat;
   };
 
-  type Order = {
+  public type Order = {
     id : Nat;
     customerId : Nat;
     product : Product;
     quantity : Nat;
-    orderDate : Time.Time;
+    orderDate : Int;
     status : Text;
-    deliveryDate : ?Time.Time;
+    deliveryDate : ?Int;
     phoneNumber : Text;
-    requestedDeliveryDate : ?Time.Time;
+    requestedDeliveryDate : ?Int;
   };
 
-  type Delivery = {
+  public type Delivery = {
     orderId : Nat;
-    deliveryDate : Time.Time;
+    deliveryDate : Int;
     deliveryTime : Text;
   };
 
-  type RegularCustomer = {
+  public type RegularCustomer = {
     customerId : Nat;
     name : Text;
     phone : Text;
@@ -42,7 +43,7 @@ module {
     isActive : Bool;
   };
 
-  type DailyOrderRecord = {
+  public type DailyOrderRecord = {
     recordId : Nat;
     customerId : Nat;
     date : Text;
@@ -51,29 +52,56 @@ module {
     notes : ?Text;
   };
 
-  type UserProfile = {
+  public type UserProfile = {
     name : Text;
     email : ?Text;
   };
 
-  type AdminCredentials = {
+  public type AdminCredentials = {
     username : Text;
     passwordHash : Text;
   };
 
-  type Actor = {
-    var nextOrderId : Nat;
-    var nextCustomerId : Nat;
-    var nextRecordId : Nat;
-    var adminCredentials : ?AdminCredentials;
+  // Old actor type with previous record structure
+  type OldActor = {
+    nextOrderId : Nat;
+    nextCustomerId : Nat;
+    nextRecordId : Nat;
+    adminCredentials : ?AdminCredentials;
     orders : Map.Map<Nat, Order>;
     deliveries : Map.Map<Nat, Delivery>;
     regularCustomers : Map.Map<Nat, RegularCustomer>;
     dailyOrderRecords : Map.Map<Nat, DailyOrderRecord>;
     userProfiles : Map.Map<Principal, UserProfile>;
+    customerOwnership : Map.Map<Nat, Principal>;
   };
 
-  public func run(old : Actor) : Actor {
-    old;
+  // New actor type with updated AdminCredentials structure
+  type NewActor = {
+    nextOrderId : Nat;
+    nextCustomerId : Nat;
+    nextRecordId : Nat;
+    adminCredentials : ?AdminCredentials;
+    orders : Map.Map<Nat, Order>;
+    deliveries : Map.Map<Nat, Delivery>;
+    regularCustomers : Map.Map<Nat, RegularCustomer>;
+    dailyOrderRecords : Map.Map<Nat, DailyOrderRecord>;
+    userProfiles : Map.Map<Principal, UserProfile>;
+    customerOwnership : Map.Map<Nat, Principal>;
+  };
+
+  public func run(old : OldActor) : NewActor {
+    {
+      nextOrderId = old.nextOrderId;
+      nextCustomerId = old.nextCustomerId;
+      nextRecordId = old.nextRecordId;
+      adminCredentials = old.adminCredentials;
+      orders = old.orders;
+      deliveries = old.deliveries;
+      regularCustomers = old.regularCustomers;
+      dailyOrderRecords = old.dailyOrderRecords;
+      userProfiles = old.userProfiles;
+      customerOwnership = old.customerOwnership;
+    };
   };
 };
