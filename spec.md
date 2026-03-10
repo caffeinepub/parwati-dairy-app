@@ -1,19 +1,23 @@
 # Parwati Dairy App
 
 ## Current State
-The app has a Motoko backend with admin credential setup via `setAdminCredentials`. The current implementation requires the caller to already be an admin in the access control system before they can create admin credentials — making first-time setup impossible (chicken-and-egg problem). Users see an error when trying to set up their admin account.
+Admin login uses username/password with SHA-256 hashing. `adminLogin` is a `public query func` in the backend. Order History and Delivery Schedule backend functions (`getOrderHistory`, `getDeliverySchedule`) require `AccessControl.hasPermission(caller, #user)` which fails for anonymous callers (all non-II users). This causes errors on those pages and potentially stale-read failures on login.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Nothing new to add
+- Nothing new
 
 ### Modify
-- `setAdminCredentials` backend function: Remove the access control admin check so that first-time setup is allowed for any caller when no credentials exist yet. Once credentials are set, the function returns false (user must use `changeAdminCredentials` to update).
+- `adminLogin` backend: change from `public query func` to `public shared func` so it always reads committed (not replicated/potentially stale) state
+- `getOrderHistory` backend: remove `#user` permission check — this is a public customer-facing query; keep per-customer ownership check only for non-admins or remove entirely since there's no IC identity auth
+- `getDeliverySchedule` backend: remove `#user` permission check for the same reason
+- `getDailyOrderRecordsByCustomer` backend: remove `#user` permission check (admin check below it is sufficient)
 
 ### Remove
-- The `AccessControl.isAdmin` guard from `setAdminCredentials`
+- Nothing
 
 ## Implementation Plan
-1. Regenerate the Motoko backend with the fixed `setAdminCredentials` function that allows first-time setup without requiring access control admin status.
-2. All other backend logic remains identical (order management, customer records, delivery scheduling, daily order records, change password flow, etc.).
+1. In `main.mo`: change `adminLogin` to `public shared func`
+2. In `main.mo`: remove `AccessControl.hasPermission(caller, #user)` trap from `getOrderHistory`, `getDeliverySchedule`, and `getDailyOrderRecordsByCustomer`
+3. Validate frontend (no changes needed)
