@@ -4,7 +4,6 @@ import {
   Home,
   Menu,
   Phone,
-  ShieldCheck,
   ShoppingBag,
   Truck,
   Users,
@@ -23,7 +22,6 @@ export default function Layout() {
     { path: "/delivery-schedule", label: "Delivery", icon: Truck },
     { path: "/regular-customers", label: "Regular Customers", icon: Users },
     { path: "/contact", label: "Contact", icon: Phone },
-    { path: "/admin", label: "Admin", icon: ShieldCheck, muted: true },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -76,9 +74,7 @@ export default function Layout() {
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors text-sm ${
                       active
                         ? "bg-primary text-primary-foreground"
-                        : item.muted
-                          ? "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                          : "hover:bg-secondary text-foreground"
+                        : "hover:bg-secondary text-foreground"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -116,9 +112,7 @@ export default function Layout() {
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                       active
                         ? "bg-primary text-primary-foreground"
-                        : item.muted
-                          ? "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                          : "hover:bg-secondary text-foreground"
+                        : "hover:bg-secondary text-foreground"
                     }`}
                   >
                     <Icon className="h-5 w-5" />

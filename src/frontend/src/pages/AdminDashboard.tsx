@@ -41,13 +41,12 @@ import type { Order } from "../backend";
 import AdminGuard from "../components/AdminGuard";
 import { useAdminSession } from "../hooks/useAdminSession";
 import {
-  hashPassword,
   useAllOrders,
   useChangeAdminCredentials,
   useRegularCustomers,
 } from "../hooks/useQueries";
 
-// ─── Product prices for total calculation ─────────────────────────────────────
+// ─── Product prices for total calculation ───────────────────────────────────────────────────────
 const PRODUCT_PRICES: Record<string, number> = {
   Milk: 60,
   Paneer: 400,
@@ -63,7 +62,6 @@ function getOrderTotal(order: Order): number {
 function formatDate(ts: bigint | undefined): string {
   if (!ts) return "—";
   try {
-    // ICP timestamps are in nanoseconds
     const ms = Number(ts) / 1_000_000;
     return new Date(ms).toLocaleDateString("en-IN", {
       day: "2-digit",
@@ -90,7 +88,7 @@ function statusBadgeVariant(
   }
 }
 
-// ─── All Orders Tab ───────────────────────────────────────────────────────────
+// ─── All Orders Tab ────────────────────────────────────────────────────────────────────────────────────
 function AllOrdersTab() {
   const { isAdminLoggedIn } = useAdminSession();
   const { data: orders, isLoading, error } = useAllOrders(isAdminLoggedIn);
@@ -210,7 +208,7 @@ function AllOrdersTab() {
   );
 }
 
-// ─── Customer Records Tab (summary) ──────────────────────────────────────────
+// ─── Customer Records Tab (summary) ───────────────────────────────────────────────────────────────────────────────────
 function CustomerRecordsTab() {
   const { data: customers, isLoading, error } = useRegularCustomers();
 
@@ -267,7 +265,6 @@ function CustomerRecordsTab() {
 
   return (
     <div className="space-y-4">
-      {/* Summary row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <Card>
           <CardContent className="pt-4 pb-4 text-center">
@@ -286,7 +283,9 @@ function CustomerRecordsTab() {
         <Card className="col-span-2 sm:col-span-1">
           <CardContent className="pt-4 pb-4 text-center">
             <p
-              className={`text-2xl font-bold ${totalDue > 0 ? "text-destructive" : "text-green-600"}`}
+              className={`text-2xl font-bold ${
+                totalDue > 0 ? "text-destructive" : "text-green-600"
+              }`}
             >
               ₹{totalDue.toFixed(0)}
             </p>
@@ -295,7 +294,6 @@ function CustomerRecordsTab() {
         </Card>
       </div>
 
-      {/* Customer table */}
       <ScrollArea
         className="border border-border rounded-lg"
         data-ocid="customers.table"
@@ -345,7 +343,9 @@ function CustomerRecordsTab() {
                     ₹{c.amountReceived.toFixed(2)}
                   </TableCell>
                   <TableCell
-                    className={`text-right font-bold text-sm ${balance > 0 ? "text-destructive" : "text-green-600"}`}
+                    className={`text-right font-bold text-sm ${
+                      balance > 0 ? "text-destructive" : "text-green-600"
+                    }`}
                   >
                     ₹{balance.toFixed(2)}
                   </TableCell>
@@ -370,7 +370,7 @@ function CustomerRecordsTab() {
   );
 }
 
-// ─── Change Password Section ──────────────────────────────────────────────────
+// ─── Change Password Section ────────────────────────────────────────────────────────────────────────────────────────
 function ChangePasswordSection() {
   const changeCredentials = useChangeAdminCredentials();
   const [oldPassword, setOldPassword] = useState("");
@@ -400,14 +400,10 @@ function ChangePasswordSection() {
     }
 
     try {
-      const [oldHash, newHash] = await Promise.all([
-        hashPassword(oldPassword),
-        hashPassword(newPassword),
-      ]);
       const ok = await changeCredentials.mutateAsync({
-        oldPasswordHash: oldHash,
+        oldPassword,
         newUsername: newUsername.trim(),
-        newPasswordHash: newHash,
+        newPassword,
       });
       if (ok) {
         setSuccess(true);
@@ -543,7 +539,7 @@ function ChangePasswordSection() {
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// ─── Main Page ─────────────────────────────────────────────────────────────────────────────────────────────────
 export default function AdminDashboard() {
   const { logoutAdmin } = useAdminSession();
 
@@ -551,7 +547,6 @@ export default function AdminDashboard() {
     <div className="min-h-[calc(100vh-8rem)] py-8 md:py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Page header */}
           <div className="mb-8">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -565,13 +560,11 @@ export default function AdminDashboard() {
                   Manage customer records and view all order details.
                 </p>
               </div>
-              {/* Logout shown outside AdminGuard for dashboard-level access */}
             </div>
           </div>
 
           <AdminGuard>
             <div className="space-y-8">
-              {/* Logout button */}
               <div className="flex justify-end">
                 <Button
                   variant="outline"
@@ -585,7 +578,6 @@ export default function AdminDashboard() {
                 </Button>
               </div>
 
-              {/* Main tabs */}
               <Tabs defaultValue="customers">
                 <TabsList className="mb-6" data-ocid="admin.tab">
                   <TabsTrigger

@@ -6,19 +6,10 @@ import type {
   RegularCustomer,
 } from "../backend";
 import { useActor } from "./useActor";
-
-// ─── Password hashing helper ───────────────────────────────────────────────────
-export async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
+import { useAdminSession } from "./useAdminSession";
 
 // ─── Admin credential hooks ────────────────────────────────────────────────────
 
-// Hook to check if admin credentials have been set up
 export function useHasAdminCredentials() {
   const { actor, isFetching } = useActor();
 
@@ -40,15 +31,14 @@ export function useHasAdminCredentials() {
   });
 }
 
-// Mutation to set admin credentials (first-time setup)
 export function useSetAdminCredentials() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: { username: string; passwordHash: string }) => {
+    mutationFn: async (params: { username: string; password: string }) => {
       if (!actor) throw new Error("Actor not initialized");
-      return actor.setAdminCredentials(params.username, params.passwordHash);
+      return actor.setAdminCredentials(params.username, params.password);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hasAdminCredentials"] });
@@ -56,19 +46,19 @@ export function useSetAdminCredentials() {
   });
 }
 
-// Mutation to log in as admin
 export function useAdminLogin() {
   const { actor } = useActor();
 
   return useMutation({
-    mutationFn: async (params: { username: string; passwordHash: string }) => {
+    mutationFn: async (params: { username: string; password: string }) => {
       if (!actor) throw new Error("Actor not initialized");
-      return actor.adminLogin(params.username, params.passwordHash);
+      return actor.adminLogin(params.username, params.password);
     },
+    retry: 2,
+    retryDelay: 1000,
   });
 }
 
-// Mutation to reset admin password using verification code
 export function useResetAdminPassword() {
   const { actor } = useActor();
 
@@ -76,55 +66,34 @@ export function useResetAdminPassword() {
     mutationFn: async (params: {
       verificationCode: string;
       newUsername: string;
-      newPasswordHash: string;
+      newPassword: string;
     }) => {
       if (!actor) throw new Error("Actor not initialized");
       return actor.resetAdminPassword(
         params.verificationCode,
         params.newUsername,
-        params.newPasswordHash,
+        params.newPassword,
       );
     },
   });
 }
 
-// Mutation to change admin credentials
 export function useChangeAdminCredentials() {
   const { actor } = useActor();
 
   return useMutation({
     mutationFn: async (params: {
-      oldPasswordHash: string;
+      oldPassword: string;
       newUsername: string;
-      newPasswordHash: string;
+      newPassword: string;
     }) => {
       if (!actor) throw new Error("Actor not initialized");
       return actor.changeAdminCredentials(
-        params.oldPasswordHash,
+        params.oldPassword,
         params.newUsername,
-        params.newPasswordHash,
+        params.newPassword,
       );
     },
-  });
-}
-
-// Hook to check if the current caller is an admin
-export function useIsAdmin() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<boolean>({
-    queryKey: ["isAdmin"],
-    queryFn: async () => {
-      if (!actor) return false;
-      try {
-        return await actor.isCallerAdmin();
-      } catch {
-        return false;
-      }
-    },
-    enabled: !!actor && !isFetching,
-    staleTime: 60000,
-    retry: 1,
   });
 }
 
@@ -141,7 +110,7 @@ export function useOrderHistory(customerId: number) {
         return result || [];
       } catch (error) {
         console.error("Error fetching order history:", error);
-        throw error;
+        return [];
       }
     },
     enabled: !!actor && !isFetching && customerId > 0,
@@ -153,20 +122,21 @@ export function useOrderHistory(customerId: number) {
 // Hook to fetch all orders (admin only)
 export function useAllOrders(isAdmin: boolean) {
   const { actor, isFetching } = useActor();
+  const { adminPassword } = useAdminSession();
 
   return useQuery<Order[]>({
-    queryKey: ["allOrders"],
+    queryKey: ["allOrders", adminPassword],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor || !adminPassword) return [];
       try {
-        const result = await actor.getAllOrders();
+        const result = await actor.getAllOrders(adminPassword);
         return result || [];
       } catch (error) {
         console.error("Error fetching all orders:", error);
-        throw error;
+        return [];
       }
     },
-    enabled: !!actor && !isFetching && isAdmin,
+    enabled: !!actor && !isFetching && isAdmin && !!adminPassword,
     retry: 2,
     staleTime: 30000,
   });
@@ -185,7 +155,7 @@ export function useDeliverySchedule(orderId: bigint) {
         return result || null;
       } catch (error) {
         console.error("Error fetching delivery schedule:", error);
-        throw error;
+        return null;
       }
     },
     enabled:
@@ -198,20 +168,21 @@ export function useDeliverySchedule(orderId: bigint) {
 // Hook to fetch all regular customers
 export function useRegularCustomers() {
   const { actor, isFetching } = useActor();
+  const { adminPassword, isAdminLoggedIn } = useAdminSession();
 
   return useQuery<RegularCustomer[]>({
-    queryKey: ["regularCustomers"],
+    queryKey: ["regularCustomers", adminPassword],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor || !adminPassword) return [];
       try {
-        const result = await actor.getRegularCustomers();
+        const result = await actor.getRegularCustomers(adminPassword);
         return result || [];
       } catch (error) {
         console.error("Error fetching regular customers:", error);
-        throw error;
+        return [];
       }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && isAdminLoggedIn && !!adminPassword,
     retry: 2,
     staleTime: 15000,
   });
@@ -220,6 +191,7 @@ export function useRegularCustomers() {
 // Hook to add a regular customer
 export function useAddRegularCustomer() {
   const { actor } = useActor();
+  const { adminPassword } = useAdminSession();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -231,7 +203,9 @@ export function useAddRegularCustomer() {
       pricePerLitre: number;
     }) => {
       if (!actor) throw new Error("Actor not initialized");
+      if (!adminPassword) throw new Error("Not authenticated as admin");
       return actor.addRegularCustomer(
+        adminPassword,
         params.name,
         params.phone,
         params.address,
@@ -248,12 +222,14 @@ export function useAddRegularCustomer() {
 // Hook to record a daily delivery for a customer
 export function useRecordDailyDelivery() {
   const { actor } = useActor();
+  const { adminPassword } = useAdminSession();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (customerId: bigint) => {
       if (!actor) throw new Error("Actor not initialized");
-      return actor.recordDailyDelivery(customerId);
+      if (!adminPassword) throw new Error("Not authenticated as admin");
+      return actor.recordDailyDelivery(adminPassword, customerId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["regularCustomers"] });
@@ -264,6 +240,7 @@ export function useRecordDailyDelivery() {
 // Hook to record a payment for a customer
 export function useRecordPayment() {
   const { actor } = useActor();
+  const { adminPassword } = useAdminSession();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -273,7 +250,9 @@ export function useRecordPayment() {
       paymentDate: string;
     }) => {
       if (!actor) throw new Error("Actor not initialized");
+      if (!adminPassword) throw new Error("Not authenticated as admin");
       return actor.recordPayment(
+        adminPassword,
         params.customerId,
         params.amount,
         params.paymentDate,
@@ -288,6 +267,7 @@ export function useRecordPayment() {
 // Hook to update a regular customer
 export function useUpdateRegularCustomer() {
   const { actor } = useActor();
+  const { adminPassword } = useAdminSession();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -301,7 +281,9 @@ export function useUpdateRegularCustomer() {
       isActive: boolean;
     }) => {
       if (!actor) throw new Error("Actor not initialized");
+      if (!adminPassword) throw new Error("Not authenticated as admin");
       return actor.updateRegularCustomer(
+        adminPassword,
         params.customerId,
         params.name,
         params.phone,
@@ -330,7 +312,7 @@ export function useDailyOrderRecordsByCustomer(customerId: bigint | null) {
         return result || [];
       } catch (error) {
         console.error("Error fetching daily order records:", error);
-        throw error;
+        return [];
       }
     },
     enabled: !!actor && !isFetching && customerId !== null,
@@ -342,6 +324,7 @@ export function useDailyOrderRecordsByCustomer(customerId: bigint | null) {
 // Hook to add a daily order record
 export function useAddDailyOrderRecord() {
   const { actor } = useActor();
+  const { adminPassword } = useAdminSession();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -353,7 +336,9 @@ export function useAddDailyOrderRecord() {
       notes: string | null;
     }) => {
       if (!actor) throw new Error("Actor not initialized");
+      if (!adminPassword) throw new Error("Not authenticated as admin");
       return actor.addDailyOrderRecord(
+        adminPassword,
         params.customerId,
         params.date,
         params.quantityDelivered,
@@ -373,12 +358,14 @@ export function useAddDailyOrderRecord() {
 // Hook to delete a daily order record
 export function useDeleteDailyOrderRecord() {
   const { actor } = useActor();
+  const { adminPassword } = useAdminSession();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: { recordId: bigint; customerId: bigint }) => {
       if (!actor) throw new Error("Actor not initialized");
-      return actor.deleteDailyOrderRecord(params.recordId);
+      if (!adminPassword) throw new Error("Not authenticated as admin");
+      return actor.deleteDailyOrderRecord(adminPassword, params.recordId);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

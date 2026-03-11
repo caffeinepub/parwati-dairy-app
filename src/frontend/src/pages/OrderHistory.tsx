@@ -13,16 +13,16 @@ import {
   XCircle,
 } from "lucide-react";
 import type { Order } from "../backend";
+import { useAdminSession } from "../hooks/useAdminSession";
 import {
   useAllOrders,
   useDeliverySchedule,
-  useIsAdmin,
   useOrderHistory,
 } from "../hooks/useQueries";
 
 export default function OrderHistory() {
   const navigate = useNavigate();
-  const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
+  const { isAdminLoggedIn: isAdmin } = useAdminSession();
 
   // For non-admin: use customerId = 1 (demo)
   const customerId = 1;
@@ -35,11 +35,10 @@ export default function OrderHistory() {
     data: allOrders,
     isLoading: allOrdersLoading,
     error: allOrdersError,
-  } = useAllOrders(!!isAdmin);
+  } = useAllOrders(isAdmin);
 
   const orders = isAdmin ? allOrders : myOrders;
-  const isLoading =
-    adminLoading || (isAdmin ? allOrdersLoading : myOrdersLoading);
+  const isLoading = isAdmin ? allOrdersLoading : myOrdersLoading;
   const error = isAdmin ? allOrdersError : myOrdersError;
 
   const formatDate = (timestamp: bigint) => {
@@ -178,7 +177,10 @@ export default function OrderHistory() {
           {/* Orders List */}
           {!orders || orders.length === 0 ? (
             <Card>
-              <CardContent className="pt-12 pb-12 text-center">
+              <CardContent
+                className="pt-12 pb-12 text-center"
+                data-ocid="orders.empty_state"
+              >
                 <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">
                   No Orders Yet
@@ -204,7 +206,7 @@ export default function OrderHistory() {
                   formatDate={formatDate}
                   getStatusIcon={getStatusIcon}
                   getStatusVariant={getStatusVariant}
-                  showCustomerId={!!isAdmin}
+                  showCustomerId={isAdmin}
                 />
               ))}
             </div>

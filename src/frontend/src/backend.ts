@@ -161,34 +161,34 @@ export enum UserRole {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
-    addDailyOrderRecord(customerId: bigint, date: string, quantityDelivered: number, amountCharged: number, notes: string | null): Promise<bigint>;
-    addRegularCustomer(name: string, phone: string, address: string, dailyMilkQuantity: number, pricePerLitre: number): Promise<bigint>;
+    addDailyOrderRecord(adminPasswordHash: string, customerId: bigint, date: string, quantityDelivered: number, amountCharged: number, notes: string | null): Promise<bigint>;
+    addRegularCustomer(adminPasswordHash: string, name: string, phone: string, address: string, dailyMilkQuantity: number, pricePerLitre: number): Promise<bigint>;
     adminLogin(username: string, passwordHash: string): Promise<boolean>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     cancelOrder(orderId: bigint): Promise<boolean>;
     changeAdminCredentials(oldPasswordHash: string, newUsername: string, newPasswordHash: string): Promise<boolean>;
-    deleteDailyOrderRecord(recordId: bigint): Promise<boolean>;
-    getAllDailyOrderRecords(): Promise<Array<DailyOrderRecord>>;
-    getAllOrders(): Promise<Array<Order>>;
+    deleteDailyOrderRecord(adminPasswordHash: string, recordId: bigint): Promise<boolean>;
+    getAllDailyOrderRecords(adminPasswordHash: string): Promise<Array<DailyOrderRecord>>;
+    getAllOrders(adminPasswordHash: string): Promise<Array<Order>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getDailyOrderRecordsByCustomer(customerId: bigint): Promise<Array<DailyOrderRecord>>;
     getDeliverySchedule(orderId: bigint): Promise<Delivery | null>;
     getOrderHistory(customerId: bigint): Promise<Array<Order>>;
-    getRegularCustomers(): Promise<Array<RegularCustomer>>;
+    getRegularCustomers(adminPasswordHash: string): Promise<Array<RegularCustomer>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     hasAdminCredentials(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     placeOrder(customerId: bigint, product: Product, quantity: bigint, phoneNumber: string, requestedDeliveryDate: Time | null): Promise<bigint>;
-    recordDailyDelivery(customerId: bigint): Promise<boolean>;
-    recordPayment(customerId: bigint, amount: number, paymentDate: string): Promise<boolean>;
+    recordDailyDelivery(adminPasswordHash: string, customerId: bigint): Promise<boolean>;
+    recordPayment(adminPasswordHash: string, customerId: bigint, amount: number, paymentDate: string): Promise<boolean>;
     resetAdminPassword(verificationCode: string, newUsername: string, newPasswordHash: string): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    scheduleDelivery(orderId: bigint, deliveryDate: Time, deliveryTime: string): Promise<boolean>;
+    scheduleDelivery(adminPasswordHash: string, orderId: bigint, deliveryDate: Time, deliveryTime: string): Promise<boolean>;
     setAdminCredentials(username: string, passwordHash: string): Promise<boolean>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
-    updateOrderStatus(orderId: bigint, newStatus: string): Promise<boolean>;
-    updateRegularCustomer(customerId: bigint, name: string, phone: string, address: string, dailyMilkQuantity: number, pricePerLitre: number, isActive: boolean): Promise<boolean>;
+    updateOrderStatus(adminPasswordHash: string, orderId: bigint, newStatus: string): Promise<boolean>;
+    updateRegularCustomer(adminPasswordHash: string, customerId: bigint, name: string, phone: string, address: string, dailyMilkQuantity: number, pricePerLitre: number, isActive: boolean): Promise<boolean>;
 }
 import type { DailyOrderRecord as _DailyOrderRecord, Delivery as _Delivery, Order as _Order, Product as _Product, RegularCustomer as _RegularCustomer, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -207,31 +207,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async addDailyOrderRecord(arg0: bigint, arg1: string, arg2: number, arg3: number, arg4: string | null): Promise<bigint> {
+    async addDailyOrderRecord(arg0: string, arg1: bigint, arg2: string, arg3: number, arg4: number, arg5: string | null): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.addDailyOrderRecord(arg0, arg1, arg2, arg3, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg4));
+                const result = await this.actor.addDailyOrderRecord(arg0, arg1, arg2, arg3, arg4, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg5));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addDailyOrderRecord(arg0, arg1, arg2, arg3, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg4));
+            const result = await this.actor.addDailyOrderRecord(arg0, arg1, arg2, arg3, arg4, to_candid_opt_n1(this._uploadFile, this._downloadFile, arg5));
             return result;
         }
     }
-    async addRegularCustomer(arg0: string, arg1: string, arg2: string, arg3: number, arg4: number): Promise<bigint> {
+    async addRegularCustomer(arg0: string, arg1: string, arg2: string, arg3: string, arg4: number, arg5: number): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.addRegularCustomer(arg0, arg1, arg2, arg3, arg4);
+                const result = await this.actor.addRegularCustomer(arg0, arg1, arg2, arg3, arg4, arg5);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addRegularCustomer(arg0, arg1, arg2, arg3, arg4);
+            const result = await this.actor.addRegularCustomer(arg0, arg1, arg2, arg3, arg4, arg5);
             return result;
         }
     }
@@ -291,45 +291,45 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async deleteDailyOrderRecord(arg0: bigint): Promise<boolean> {
+    async deleteDailyOrderRecord(arg0: string, arg1: bigint): Promise<boolean> {
         if (this.processError) {
             try {
-                const result = await this.actor.deleteDailyOrderRecord(arg0);
+                const result = await this.actor.deleteDailyOrderRecord(arg0, arg1);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.deleteDailyOrderRecord(arg0);
+            const result = await this.actor.deleteDailyOrderRecord(arg0, arg1);
             return result;
         }
     }
-    async getAllDailyOrderRecords(): Promise<Array<DailyOrderRecord>> {
+    async getAllDailyOrderRecords(arg0: string): Promise<Array<DailyOrderRecord>> {
         if (this.processError) {
             try {
-                const result = await this.actor.getAllDailyOrderRecords();
+                const result = await this.actor.getAllDailyOrderRecords(arg0);
                 return from_candid_vec_n4(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getAllDailyOrderRecords();
+            const result = await this.actor.getAllDailyOrderRecords(arg0);
             return from_candid_vec_n4(this._uploadFile, this._downloadFile, result);
         }
     }
-    async getAllOrders(): Promise<Array<Order>> {
+    async getAllOrders(arg0: string): Promise<Array<Order>> {
         if (this.processError) {
             try {
-                const result = await this.actor.getAllOrders();
+                const result = await this.actor.getAllOrders(arg0);
                 return from_candid_vec_n8(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getAllOrders();
+            const result = await this.actor.getAllOrders(arg0);
             return from_candid_vec_n8(this._uploadFile, this._downloadFile, result);
         }
     }
@@ -403,17 +403,17 @@ export class Backend implements backendInterface {
             return from_candid_vec_n8(this._uploadFile, this._downloadFile, result);
         }
     }
-    async getRegularCustomers(): Promise<Array<RegularCustomer>> {
+    async getRegularCustomers(arg0: string): Promise<Array<RegularCustomer>> {
         if (this.processError) {
             try {
-                const result = await this.actor.getRegularCustomers();
+                const result = await this.actor.getRegularCustomers(arg0);
                 return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getRegularCustomers();
+            const result = await this.actor.getRegularCustomers(arg0);
             return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
         }
     }
@@ -473,31 +473,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async recordDailyDelivery(arg0: bigint): Promise<boolean> {
+    async recordDailyDelivery(arg0: string, arg1: bigint): Promise<boolean> {
         if (this.processError) {
             try {
-                const result = await this.actor.recordDailyDelivery(arg0);
+                const result = await this.actor.recordDailyDelivery(arg0, arg1);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.recordDailyDelivery(arg0);
+            const result = await this.actor.recordDailyDelivery(arg0, arg1);
             return result;
         }
     }
-    async recordPayment(arg0: bigint, arg1: number, arg2: string): Promise<boolean> {
+    async recordPayment(arg0: string, arg1: bigint, arg2: number, arg3: string): Promise<boolean> {
         if (this.processError) {
             try {
-                const result = await this.actor.recordPayment(arg0, arg1, arg2);
+                const result = await this.actor.recordPayment(arg0, arg1, arg2, arg3);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.recordPayment(arg0, arg1, arg2);
+            const result = await this.actor.recordPayment(arg0, arg1, arg2, arg3);
             return result;
         }
     }
@@ -529,17 +529,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async scheduleDelivery(arg0: bigint, arg1: Time, arg2: string): Promise<boolean> {
+    async scheduleDelivery(arg0: string, arg1: bigint, arg2: Time, arg3: string): Promise<boolean> {
         if (this.processError) {
             try {
-                const result = await this.actor.scheduleDelivery(arg0, arg1, arg2);
+                const result = await this.actor.scheduleDelivery(arg0, arg1, arg2, arg3);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.scheduleDelivery(arg0, arg1, arg2);
+            const result = await this.actor.scheduleDelivery(arg0, arg1, arg2, arg3);
             return result;
         }
     }
@@ -571,31 +571,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async updateOrderStatus(arg0: bigint, arg1: string): Promise<boolean> {
+    async updateOrderStatus(arg0: string, arg1: bigint, arg2: string): Promise<boolean> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateOrderStatus(arg0, arg1);
+                const result = await this.actor.updateOrderStatus(arg0, arg1, arg2);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateOrderStatus(arg0, arg1);
+            const result = await this.actor.updateOrderStatus(arg0, arg1, arg2);
             return result;
         }
     }
-    async updateRegularCustomer(arg0: bigint, arg1: string, arg2: string, arg3: string, arg4: number, arg5: number, arg6: boolean): Promise<boolean> {
+    async updateRegularCustomer(arg0: string, arg1: bigint, arg2: string, arg3: string, arg4: string, arg5: number, arg6: number, arg7: boolean): Promise<boolean> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateRegularCustomer(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                const result = await this.actor.updateRegularCustomer(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateRegularCustomer(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            const result = await this.actor.updateRegularCustomer(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
             return result;
         }
     }

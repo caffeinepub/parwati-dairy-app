@@ -78,32 +78,26 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
-    addDailyOrderRecord(customerId: bigint, date: string, quantityDelivered: number, amountCharged: number, notes: string | null): Promise<bigint>;
-    addRegularCustomer(name: string, phone: string, address: string, dailyMilkQuantity: number, pricePerLitre: number): Promise<bigint>;
+    addDailyOrderRecord(adminPasswordHash: string, customerId: bigint, date: string, quantityDelivered: number, amountCharged: number, notes: string | null): Promise<bigint>;
+    addRegularCustomer(adminPasswordHash: string, name: string, phone: string, address: string, dailyMilkQuantity: number, pricePerLitre: number): Promise<bigint>;
     adminLogin(username: string, passwordHash: string): Promise<boolean>;
-    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     cancelOrder(orderId: bigint): Promise<boolean>;
     changeAdminCredentials(oldPasswordHash: string, newUsername: string, newPasswordHash: string): Promise<boolean>;
-    deleteDailyOrderRecord(recordId: bigint): Promise<boolean>;
-    getAllDailyOrderRecords(): Promise<Array<DailyOrderRecord>>;
-    getAllOrders(): Promise<Array<Order>>;
-    getCallerUserProfile(): Promise<UserProfile | null>;
-    getCallerUserRole(): Promise<UserRole>;
+    deleteDailyOrderRecord(adminPasswordHash: string, recordId: bigint): Promise<boolean>;
+    getAllDailyOrderRecords(adminPasswordHash: string): Promise<Array<DailyOrderRecord>>;
+    getAllOrders(adminPasswordHash: string): Promise<Array<Order>>;
     getDailyOrderRecordsByCustomer(customerId: bigint): Promise<Array<DailyOrderRecord>>;
     getDeliverySchedule(orderId: bigint): Promise<Delivery | null>;
     getOrderHistory(customerId: bigint): Promise<Array<Order>>;
-    getRegularCustomers(): Promise<Array<RegularCustomer>>;
-    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getRegularCustomers(adminPasswordHash: string): Promise<Array<RegularCustomer>>;
     hasAdminCredentials(): Promise<boolean>;
-    isCallerAdmin(): Promise<boolean>;
     placeOrder(customerId: bigint, product: Product, quantity: bigint, phoneNumber: string, requestedDeliveryDate: Time | null): Promise<bigint>;
-    recordDailyDelivery(customerId: bigint): Promise<boolean>;
-    recordPayment(customerId: bigint, amount: number, paymentDate: string): Promise<boolean>;
+    recordDailyDelivery(adminPasswordHash: string, customerId: bigint): Promise<boolean>;
+    recordPayment(adminPasswordHash: string, customerId: bigint, amount: number, paymentDate: string): Promise<boolean>;
     resetAdminPassword(verificationCode: string, newUsername: string, newPasswordHash: string): Promise<boolean>;
-    saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    scheduleDelivery(orderId: bigint, deliveryDate: Time, deliveryTime: string): Promise<boolean>;
+    scheduleDelivery(adminPasswordHash: string, orderId: bigint, deliveryDate: Time, deliveryTime: string): Promise<boolean>;
     setAdminCredentials(username: string, passwordHash: string): Promise<boolean>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
-    updateOrderStatus(orderId: bigint, newStatus: string): Promise<boolean>;
-    updateRegularCustomer(customerId: bigint, name: string, phone: string, address: string, dailyMilkQuantity: number, pricePerLitre: number, isActive: boolean): Promise<boolean>;
+    updateOrderStatus(adminPasswordHash: string, orderId: bigint, newStatus: string): Promise<boolean>;
+    updateRegularCustomer(adminPasswordHash: string, customerId: bigint, name: string, phone: string, address: string, dailyMilkQuantity: number, pricePerLitre: number, isActive: boolean): Promise<boolean>;
 }

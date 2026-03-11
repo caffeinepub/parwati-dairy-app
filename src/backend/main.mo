@@ -1,17 +1,10 @@
 import Time "mo:core/Time";
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
-import List "mo:core/List";
 import Float "mo:core/Float";
-import OutCall "http-outcalls/outcall";
 import Principal "mo:core/Principal";
-import MixinAuthorization "authorization/MixinAuthorization";
-import AccessControl "authorization/access-control";
-import Iter "mo:core/Iter";
 import Text "mo:core/Text";
-import Runtime "mo:core/Runtime";
-
-
+import AccessControl "authorization/access-control";
 
 actor {
   public type Product = {
@@ -61,86 +54,78 @@ actor {
     notes : ?Text;
   };
 
-  public type UserProfile = {
-    name : Text;
-    email : ?Text;
-  };
-
   public type AdminCredentials = {
     username : Text;
     passwordHash : Text;
   };
 
+  public type UserProfile = {
+    name : Text;
+    email : ?Text;
+  };
+
   stable var nextOrderId = 0;
   stable var nextCustomerId = 0;
   stable var nextRecordId = 0;
-  stable var adminCredentials : ?AdminCredentials = null;
+  // Default credentials: username=pratap, password=Dairy@2024
+  stable var adminCredentials : ?AdminCredentials = ?{
+    username = "pratap";
+    passwordHash = "Dairy@2024";
+  };
 
   let orders = Map.empty<Nat, Order>();
   let deliveries = Map.empty<Nat, Delivery>();
   let regularCustomers = Map.empty<Nat, RegularCustomer>();
   let dailyOrderRecords = Map.empty<Nat, DailyOrderRecord>();
-  let userProfiles = Map.empty<Principal, UserProfile>();
 
   let accessControlState = AccessControl.initState();
-  include MixinAuthorization(accessControlState);
-
   let customerOwnership = Map.empty<Nat, Principal>();
+  let userProfiles = Map.empty<Principal, UserProfile>();
 
-  func sendOrderConfirmationSms(
-    phoneNumber : Text,
-    productName : Text,
-    quantity : Nat,
-    totalPrice : Nat,
-    orderId : Nat,
-  ) : async () {
-    let message = "Thank you for your order! \nOrder ID: " # orderId.toText() # "\nProduct: " # productName # "\nQuantity: " # quantity.toText() # "\nTotal Price: $" # totalPrice.toText();
-    let encodedMessage : Text = message;
-    let smsGatewayUrl = "https://api.smsprovider.com/send?to=" # phoneNumber # "&message=" # encodedMessage;
-    let _ = await OutCall.httpGetRequest(smsGatewayUrl, [], transform);
-  };
-
-  public query func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
-    OutCall.transform(input);
-  };
-
-  public query func hasAdminCredentials() : async Bool {
-    adminCredentials != null;
-  };
-
-  public shared ({ caller }) func setAdminCredentials(username : Text, passwordHash : Text) : async Bool {
-    switch (adminCredentials) {
-      case (null) {
-        adminCredentials := ?{ username; passwordHash };
-        true;
-      };
-      case (_) { false };
-    };
-  };
-
-  // Login — uses shared (update) call to always read committed state
-  public shared func adminLogin(username : Text, passwordHash : Text) : async Bool {
+  // Query function for faster, more reliable login check
+  public shared func adminLogin(username : Text, password : Text) : async Bool {
     switch (adminCredentials) {
       case (null) { false };
       case (?credentials) {
-        credentials.username == username and credentials.passwordHash == passwordHash;
+        credentials.username == username and credentials.passwordHash == password;
       };
     };
   };
 
-  // Change admin credentials — secured by verifying the old password hash
+  public shared func hasAdminCredentials() : async Bool {
+    adminCredentials != null;
+  };
+
+  public query func getAdminUsername() : async Text {
+    switch (adminCredentials) {
+      case (null) { "" };
+      case (?creds) { creds.username };
+    };
+  };
+
+  public shared func setAdminCredentials(username : Text, password : Text) : async Bool {
+    // Only allow setup if no admin exists yet
+    switch (adminCredentials) {
+      case (?_) { false }; // Admin already exists, use changeAdminCredentials instead
+      case (null) {
+        adminCredentials := ?{ username; passwordHash = password };
+        true;
+      };
+    };
+  };
+
   public shared func changeAdminCredentials(
-    oldPasswordHash : Text,
+    oldPassword : Text,
     newUsername : Text,
-    newPasswordHash : Text,
+    newPassword : Text,
   ) : async Bool {
     switch (adminCredentials) {
       case (null) { false };
       case (?credentials) {
-        if (credentials.passwordHash == oldPasswordHash) {
+        if (credentials.passwordHash == oldPassword) {
           adminCredentials := ?{
             username = newUsername;
-            passwordHash = newPasswordHash;
+            passwordHash = newPassword;
           };
           true;
         } else { false };
@@ -148,65 +133,36 @@ actor {
     };
   };
 
-  // Reset admin password — secured by verification code only
   public shared func resetAdminPassword(
     verificationCode : Text,
     newUsername : Text,
-    newPasswordHash : Text,
+    newPassword : Text,
   ) : async Bool {
     if (verificationCode != "5714") {
       return false;
     };
     adminCredentials := ?{
       username = newUsername;
-      passwordHash = newPasswordHash;
+      passwordHash = newPassword;
     };
     true;
   };
 
-  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can get profiles");
+  // Verify admin helper (used internally)
+  func isValidAdmin(password : Text) : Bool {
+    switch (adminCredentials) {
+      case (null) { false };
+      case (?creds) { creds.passwordHash == password };
     };
-    userProfiles.get(caller);
   };
 
-  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
-    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Can only view your own profile");
-    };
-    userProfiles.get(user);
-  };
-
-  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
-    userProfiles.add(caller, profile);
-  };
-
-  public shared ({ caller }) func placeOrder(
+  public shared func placeOrder(
     customerId : Nat,
     product : Product,
     quantity : Nat,
     phoneNumber : Text,
     requestedDeliveryDate : ?Time.Time,
   ) : async Nat {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can place orders");
-    };
-
-    switch (customerOwnership.get(customerId)) {
-      case (null) {
-        customerOwnership.add(customerId, caller);
-      };
-      case (?owner) {
-        if (owner != caller and not AccessControl.isAdmin(accessControlState, caller)) {
-          Runtime.trap("Unauthorized: Cannot place order for another customer");
-        };
-      };
-    };
-
     let orderId = nextOrderId;
     let newOrder : Order = {
       id = orderId;
@@ -219,25 +175,18 @@ actor {
       phoneNumber;
       requestedDeliveryDate;
     };
-
     orders.add(orderId, newOrder);
     nextOrderId += 1;
-
-    let totalPrice = product.price * quantity;
-    await sendOrderConfirmationSms(phoneNumber, product.name, quantity, totalPrice, orderId);
-
     orderId;
   };
 
-  public shared ({ caller }) func scheduleDelivery(
+  public shared func scheduleDelivery(
+    adminPassword : Text,
     orderId : Nat,
     deliveryDate : Time.Time,
     deliveryTime : Text,
   ) : async Bool {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can schedule deliveries");
-    };
-
+    if (not isValidAdmin(adminPassword)) { return false };
     switch (orders.get(orderId)) {
       case (null) { false };
       case (?order) {
@@ -247,93 +196,59 @@ actor {
           deliveryTime;
         };
         deliveries.add(orderId, newDelivery);
-
-        let updatedOrder = { order with deliveryDate = ?deliveryDate };
-        orders.add(orderId, updatedOrder);
+        orders.add(orderId, { order with deliveryDate = ?deliveryDate });
         true;
       };
     };
   };
 
-  // Public — no IC auth required since customers are anonymous
   public query func getOrderHistory(customerId : Nat) : async [Order] {
-    let orderList = orders.values().filter(
-      func(order) {
-        order.customerId == customerId;
-      }
-    );
-    orderList.toArray();
+    orders.values().filter(func(o) { o.customerId == customerId }).toArray();
   };
 
-  public query ({ caller }) func getAllOrders() : async [Order] {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can view all orders");
-    };
+  public query func getAllOrders(adminPassword : Text) : async [Order] {
+    if (not isValidAdmin(adminPassword)) { return [] };
     orders.values().toArray();
   };
 
-  // Public — no IC auth required since customers are anonymous
   public query func getDeliverySchedule(orderId : Nat) : async ?Delivery {
     deliveries.get(orderId);
   };
 
-  public shared ({ caller }) func updateOrderStatus(
+  public shared func updateOrderStatus(
+    adminPassword : Text,
     orderId : Nat,
     newStatus : Text,
   ) : async Bool {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can update order status");
-    };
-
+    if (not isValidAdmin(adminPassword)) { return false };
     switch (orders.get(orderId)) {
       case (null) { false };
       case (?order) {
-        let updatedOrder = { order with status = newStatus };
-        orders.add(orderId, updatedOrder);
+        orders.add(orderId, { order with status = newStatus });
         true;
       };
     };
   };
 
-  public shared ({ caller }) func cancelOrder(orderId : Nat) : async Bool {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can cancel orders");
-    };
-
+  public shared func cancelOrder(orderId : Nat) : async Bool {
     switch (orders.get(orderId)) {
       case (null) { false };
       case (?order) {
-        if (not AccessControl.isAdmin(accessControlState, caller)) {
-          switch (customerOwnership.get(order.customerId)) {
-            case (null) {
-              Runtime.trap("Unauthorized: Cannot cancel this order");
-            };
-            case (?owner) {
-              if (owner != caller) {
-                Runtime.trap("Unauthorized: Can only cancel your own orders");
-              };
-            };
-          };
-        };
-
-        let updatedOrder = { order with status = "Canceled" };
-        orders.add(orderId, updatedOrder);
+        orders.add(orderId, { order with status = "Canceled" });
         true;
       };
     };
   };
 
-  public shared ({ caller }) func addRegularCustomer(
+  public shared func addRegularCustomer(
+    adminPassword : Text,
     name : Text,
     phone : Text,
     address : Text,
     dailyMilkQuantity : Float,
     pricePerLitre : Float,
   ) : async Nat {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can add regular customers");
-    };
-
+    if (not isValidAdmin(adminPassword)) { return 0 };
     let customerId = nextCustomerId;
     let newCustomer : RegularCustomer = {
       customerId;
@@ -347,20 +262,18 @@ actor {
       lastPaymentDate = null;
       isActive = true;
     };
-
     regularCustomers.add(customerId, newCustomer);
     nextCustomerId += 1;
     customerId;
   };
 
-  public query ({ caller }) func getRegularCustomers() : async [RegularCustomer] {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can view regular customers");
-    };
+  public query func getRegularCustomers(adminPassword : Text) : async [RegularCustomer] {
+    if (not isValidAdmin(adminPassword)) { return [] };
     regularCustomers.values().toArray();
   };
 
-  public shared ({ caller }) func updateRegularCustomer(
+  public shared func updateRegularCustomer(
+    adminPassword : Text,
     customerId : Nat,
     name : Text,
     phone : Text,
@@ -369,14 +282,11 @@ actor {
     pricePerLitre : Float,
     isActive : Bool,
   ) : async Bool {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can update regular customers");
-    };
-
+    if (not isValidAdmin(adminPassword)) { return false };
     switch (regularCustomers.get(customerId)) {
       case (null) { false };
       case (?customer) {
-        let updatedCustomer : RegularCustomer = {
+        regularCustomers.add(customerId, {
           customerId;
           name;
           phone;
@@ -387,67 +297,57 @@ actor {
           amountReceived = customer.amountReceived;
           lastPaymentDate = customer.lastPaymentDate;
           isActive;
-        };
-        regularCustomers.add(customerId, updatedCustomer);
+        });
         true;
       };
     };
   };
 
-  public shared ({ caller }) func recordDailyDelivery(customerId : Nat) : async Bool {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can record daily deliveries");
-    };
-
+  public shared func recordDailyDelivery(adminPassword : Text, customerId : Nat) : async Bool {
+    if (not isValidAdmin(adminPassword)) { return false };
     switch (regularCustomers.get(customerId)) {
       case (null) { false };
       case (?customer) {
         let dailyAmount = customer.dailyMilkQuantity * customer.pricePerLitre;
-        let updatedCustomer = {
+        regularCustomers.add(customerId, {
           customer with
           totalAmountDue = customer.totalAmountDue + dailyAmount;
-        };
-        regularCustomers.add(customerId, updatedCustomer);
+        });
         true;
       };
     };
   };
 
-  public shared ({ caller }) func recordPayment(
+  public shared func recordPayment(
+    adminPassword : Text,
     customerId : Nat,
     amount : Float,
     paymentDate : Text,
   ) : async Bool {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can record payments");
-    };
-
+    if (not isValidAdmin(adminPassword)) { return false };
     switch (regularCustomers.get(customerId)) {
       case (null) { false };
       case (?customer) {
-        let updatedCustomer = {
+        regularCustomers.add(customerId, {
           customer with
           amountReceived = customer.amountReceived + amount;
           lastPaymentDate = ?paymentDate;
           totalAmountDue = customer.totalAmountDue - amount;
-        };
-        regularCustomers.add(customerId, updatedCustomer);
+        });
         true;
       };
     };
   };
 
-  public shared ({ caller }) func addDailyOrderRecord(
+  public shared func addDailyOrderRecord(
+    adminPassword : Text,
     customerId : Nat,
     date : Text,
     quantityDelivered : Float,
     amountCharged : Float,
     notes : ?Text,
   ) : async Nat {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can add records");
-    };
-
+    if (not isValidAdmin(adminPassword)) { return 0 };
     let recordId = nextRecordId;
     let newRecord : DailyOrderRecord = {
       recordId;
@@ -457,31 +357,22 @@ actor {
       amountCharged;
       notes;
     };
-
     dailyOrderRecords.add(recordId, newRecord);
     nextRecordId += 1;
     recordId;
   };
 
-  // Public — accessible to all (admin check handled by caller context)
   public query func getDailyOrderRecordsByCustomer(customerId : Nat) : async [DailyOrderRecord] {
-    dailyOrderRecords.values().toArray().filter(
-      func(record) { record.customerId == customerId }
-    );
+    dailyOrderRecords.values().filter(func(r) { r.customerId == customerId }).toArray();
   };
 
-  public query ({ caller }) func getAllDailyOrderRecords() : async [DailyOrderRecord] {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can view all records");
-    };
+  public query func getAllDailyOrderRecords(adminPassword : Text) : async [DailyOrderRecord] {
+    if (not isValidAdmin(adminPassword)) { return [] };
     dailyOrderRecords.values().toArray();
   };
 
-  public shared ({ caller }) func deleteDailyOrderRecord(recordId : Nat) : async Bool {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can delete records");
-    };
-
+  public shared func deleteDailyOrderRecord(adminPassword : Text, recordId : Nat) : async Bool {
+    if (not isValidAdmin(adminPassword)) { return false };
     switch (dailyOrderRecords.get(recordId)) {
       case (null) { false };
       case (_) {
