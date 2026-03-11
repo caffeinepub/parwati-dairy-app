@@ -47,6 +47,7 @@ import {
   AlertCircle,
   CalendarCheck,
   CheckCircle2,
+  ChevronDown,
   ClipboardList,
   IndianRupee,
   Loader2,
@@ -61,6 +62,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import type { DailyOrderRecord, RegularCustomer } from "../backend";
 import AdminGuard from "../components/AdminGuard";
 
@@ -105,6 +107,7 @@ function AddCustomerForm({ onClose }: AddCustomerFormProps) {
         dailyMilkQuantity: qty,
         pricePerLitre: price,
       });
+      toast.success(`Customer "${form.name.trim()}" added successfully!`);
       onClose();
     } catch {
       setError("Failed to add customer. Please try again.");
@@ -1087,6 +1090,7 @@ function CustomerCard({ customer }: CustomerCardProps) {
 export default function RegularCustomers() {
   const { data: customers, isLoading, error } = useRegularCustomers();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showInlineForm, setShowInlineForm] = useState(false);
   const [search, setSearch] = useState("");
 
   const filtered = (customers || []).filter(
@@ -1158,6 +1162,44 @@ export default function RegularCustomers() {
               </div>
             )}
 
+            {/* Inline New Customer Record Panel */}
+            <Card className="mb-6 border-primary/30 bg-primary/5">
+              <button
+                type="button"
+                className="w-full text-left"
+                onClick={() => setShowInlineForm((v) => !v)}
+                data-ocid="customer.open_modal_button"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-primary/15 rounded-md">
+                        <Plus className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base text-primary">
+                          New Customer Record
+                        </CardTitle>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Click to {showInlineForm ? "collapse" : "expand"} form
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronDown
+                      className={`h-4 w-4 text-primary transition-transform duration-200 ${showInlineForm ? "rotate-180" : ""}`}
+                    />
+                  </div>
+                </CardHeader>
+              </button>
+              {showInlineForm && (
+                <CardContent className="pt-0">
+                  <div className="border-t border-primary/20 pt-4">
+                    <AddCustomerForm onClose={() => setShowInlineForm(false)} />
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <Input
@@ -1165,8 +1207,12 @@ export default function RegularCustomers() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="flex-1"
+                data-ocid="customer.search_input"
               />
-              <Button onClick={() => setShowAddDialog(true)}>
+              <Button
+                onClick={() => setShowAddDialog(true)}
+                data-ocid="customer.secondary_button"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Customer
               </Button>

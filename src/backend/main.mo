@@ -82,7 +82,12 @@ actor {
   let customerOwnership = Map.empty<Nat, Principal>();
   let userProfiles = Map.empty<Principal, UserProfile>();
 
-  // Query function for faster, more reliable login check
+  // Fast query for checking if admin credentials exist
+  public query func hasAdminCredentials() : async Bool {
+    adminCredentials != null;
+  };
+
+  // Update call for login to always read fresh state
   public shared func adminLogin(username : Text, password : Text) : async Bool {
     switch (adminCredentials) {
       case (null) { false };
@@ -92,10 +97,6 @@ actor {
     };
   };
 
-  public shared func hasAdminCredentials() : async Bool {
-    adminCredentials != null;
-  };
-
   public query func getAdminUsername() : async Text {
     switch (adminCredentials) {
       case (null) { "" };
@@ -103,10 +104,12 @@ actor {
     };
   };
 
+  // Only allow setup if no admin exists; since defaults are pre-set, this
+  // effectively only runs after an explicit resetAdminPassword that set it to null,
+  // or for brand new canisters. Use resetAdminPassword("5714",...) to change creds.
   public shared func setAdminCredentials(username : Text, password : Text) : async Bool {
-    // Only allow setup if no admin exists yet
     switch (adminCredentials) {
-      case (?_) { false }; // Admin already exists, use changeAdminCredentials instead
+      case (?_) { false }; // Admin already exists
       case (null) {
         adminCredentials := ?{ username; passwordHash = password };
         true;

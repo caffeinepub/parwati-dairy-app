@@ -11,189 +11,98 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  AlertCircle,
+  CheckCircle2,
   Eye,
   EyeOff,
   Info,
-  KeyRound,
   Loader2,
   LogIn,
   LogOut,
   RefreshCw,
   RotateCcw,
   Shield,
-  UserPlus,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useActor } from "../hooks/useActor";
 import { useAdminSession } from "../hooks/useAdminSession";
-import {
-  useAdminLogin,
-  useHasAdminCredentials,
-  useResetAdminPassword,
-  useSetAdminCredentials,
-} from "../hooks/useQueries";
+import { useAdminLogin, useResetAdminPassword } from "../hooks/useQueries";
 
 interface AdminGuardProps {
   children: React.ReactNode;
   showLogout?: boolean;
 }
 
-// ─── Setup Form (first-time) ──────────────────────────────────────────────
-function SetupForm() {
-  const { loginAdmin } = useAdminSession();
-  const setAdminCredentials = useSetAdminCredentials();
-  const queryClient = useQueryClient();
-  const { actor, isFetching } = useActor();
+// ─── Connection Banner ────────────────────────────────────────────────────
+function ConnectionBanner() {
+  const { actor, isFetching, isError, retryActor } = useActor();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  if (actor) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!actor) {
-      setError(
-        "Still connecting to server. Please wait a moment and try again.",
-      );
-      return;
-    }
-
-    if (!username.trim()) {
-      setError("Please enter a username.");
-      return;
-    }
-    if (username.trim().length < 3) {
-      setError("Username must be at least 3 characters.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    try {
-      const ok = await setAdminCredentials.mutateAsync({
-        username: username.trim(),
-        password,
-      });
-      if (ok) {
-        await queryClient.invalidateQueries({
-          queryKey: ["hasAdminCredentials"],
-        });
-        loginAdmin(username.trim(), password);
-      } else {
-        setError("Setup failed. Please try again.");
-      }
-    } catch {
-      setError("Failed to set up admin. Please wait a moment and try again.");
-    }
-  };
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4"
-      data-ocid="admin.setup.dialog"
-    >
-      {isFetching && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground rounded-md border border-border bg-muted/40 p-2">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          Connecting to server...
-        </div>
-      )}
-      <div className="space-y-1.5">
-        <Label htmlFor="setup-username">Username</Label>
-        <Input
-          id="setup-username"
-          autoComplete="username"
-          placeholder="e.g. pratap"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          data-ocid="admin.setup.input"
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="setup-password">Password</Label>
-        <div className="relative">
-          <Input
-            id="setup-password"
-            type={showPassword ? "text" : "password"}
-            autoComplete="new-password"
-            placeholder="At least 6 characters"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="pr-10"
-          />
-          <button
-            type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            onClick={() => setShowPassword((v) => !v)}
-            tabIndex={-1}
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="setup-confirm">Confirm Password</Label>
-        <Input
-          id="setup-confirm"
-          type={showPassword ? "text" : "password"}
-          autoComplete="new-password"
-          placeholder="Repeat password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-      </div>
-      {error && (
-        <Alert variant="destructive" data-ocid="admin.setup.error_state">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={setAdminCredentials.isPending || isFetching || !actor}
-        data-ocid="admin.setup.submit_button"
+  if (isError) {
+    return (
+      <Alert
+        variant="destructive"
+        className="mb-4"
+        data-ocid="admin.connection.error_state"
       >
-        {setAdminCredentials.isPending ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Setting up...
-          </>
-        ) : (
-          <>
-            <UserPlus className="h-4 w-4 mr-2" />
-            Create Admin Account
-          </>
-        )}
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription className="flex items-center justify-between">
+          <span>Server connection failed.</span>
+          <Button
+            size="sm"
+            variant="outline"
+            className="ml-2 h-7 text-xs"
+            onClick={retryActor}
+          >
+            <RefreshCw className="h-3 w-3 mr-1" />
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (isFetching) {
+    return (
+      <div
+        className="flex items-center gap-2 text-xs text-muted-foreground rounded-md border bg-muted/40 p-2 mb-4"
+        data-ocid="admin.connection.loading_state"
+      >
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        <span>Connecting to server...</span>
+      </div>
+    );
+  }
+
+  // Actor not loaded but not fetching or error — try reloading
+  return (
+    <div className="flex items-center gap-2 text-xs text-amber-700 rounded-md border border-amber-300 bg-amber-50 p-2 mb-4">
+      <AlertCircle className="h-3.5 w-3.5" />
+      <span>Not connected.</span>
+      <Button
+        size="sm"
+        variant="outline"
+        className="ml-auto h-7 text-xs"
+        onClick={() => window.location.reload()}
+      >
+        <RefreshCw className="h-3 w-3 mr-1" />
+        Reload
       </Button>
-    </form>
+    </div>
   );
 }
 
-// ─── Reset Password Form ────────────────────────────────────────────────────
+// ─── Reset Password Form ────────────────────────────────────────────────
 function ResetPasswordForm({
+  onSuccess,
   onBack,
-}: { onBack: (successMsg?: string) => void }) {
-  const { loginAdmin } = useAdminSession();
+}: {
+  onSuccess: (username: string, password: string) => void;
+  onBack: () => void;
+}) {
   const resetPassword = useResetAdminPassword();
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
 
   const [code, setCode] = useState("");
   const [newUsername, setNewUsername] = useState("");
@@ -205,11 +114,8 @@ function ResetPasswordForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     if (!actor) {
-      setError(
-        "Still connecting to server. Please wait a moment and try again.",
-      );
+      setError("Not connected to server yet. Please wait and try again.");
       return;
     }
     if (!code.trim()) {
@@ -221,7 +127,7 @@ function ResetPasswordForm({
       return;
     }
     if (newPassword.length < 6) {
-      setError("New password must be at least 6 characters.");
+      setError("Password must be at least 6 characters.");
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -236,13 +142,14 @@ function ResetPasswordForm({
         newPassword,
       });
       if (ok) {
-        loginAdmin(newUsername.trim(), newPassword);
-        onBack();
+        onSuccess(newUsername.trim(), newPassword);
       } else {
-        setError("Invalid verification code. Please check and try again.");
+        setError(
+          "Invalid verification code. The code is the last 4 digits of the business phone.",
+        );
       }
     } catch {
-      setError("Reset failed. Please wait a moment and try again.");
+      setError("Reset failed. Please wait and try again.");
     }
   };
 
@@ -252,17 +159,12 @@ function ResetPasswordForm({
       className="space-y-4"
       data-ocid="admin.reset_password.dialog"
     >
-      {isFetching && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground rounded-md border border-border bg-muted/40 p-2">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          Connecting to server...
-        </div>
-      )}
+      <ConnectionBanner />
       <div className="space-y-1.5">
         <Label htmlFor="reset-code">Verification Code</Label>
         <Input
           id="reset-code"
-          placeholder="Enter verification code"
+          placeholder="e.g. 5714"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           maxLength={10}
@@ -270,7 +172,7 @@ function ResetPasswordForm({
           data-ocid="admin.reset_password.input"
         />
         <p className="text-xs text-muted-foreground">
-          Use the last 4 digits of the business phone number.
+          Last 4 digits of the business phone number.
         </p>
       </div>
       <div className="space-y-1.5">
@@ -300,7 +202,7 @@ function ResetPasswordForm({
           />
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             onClick={() => setShowPassword((v) => !v)}
             tabIndex={-1}
           >
@@ -313,12 +215,12 @@ function ResetPasswordForm({
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="reset-confirm-password">Confirm New Password</Label>
+        <Label htmlFor="reset-confirm">Confirm Password</Label>
         <Input
-          id="reset-confirm-password"
+          id="reset-confirm"
           type={showPassword ? "text" : "password"}
           autoComplete="new-password"
-          placeholder="Repeat new password"
+          placeholder="Repeat password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
@@ -337,15 +239,15 @@ function ResetPasswordForm({
           type="button"
           variant="outline"
           className="flex-1"
-          onClick={() => onBack()}
+          onClick={onBack}
           data-ocid="admin.reset_password.cancel_button"
         >
-          Back to Login
+          Back
         </Button>
         <Button
           type="submit"
           className="flex-1"
-          disabled={resetPassword.isPending || isFetching || !actor}
+          disabled={resetPassword.isPending || !actor}
           data-ocid="admin.reset_password.submit_button"
         >
           {resetPassword.isPending ? (
@@ -356,7 +258,7 @@ function ResetPasswordForm({
           ) : (
             <>
               <RotateCcw className="h-4 w-4 mr-2" />
-              Reset Password
+              Reset
             </>
           )}
         </Button>
@@ -365,74 +267,134 @@ function ResetPasswordForm({
   );
 }
 
-// ─── Login Form ────────────────────────────────────────────────────────────────
-function LoginForm({ onForgotPassword }: { onForgotPassword: () => void }) {
+// ─── Reset Success Screen ────────────────────────────────────────────────
+function ResetSuccessScreen({
+  username,
+  password,
+  onLogin,
+}: { username: string; password: string; onLogin: () => void }) {
+  return (
+    <div className="space-y-5" data-ocid="admin.reset_success.panel">
+      <div className="flex flex-col items-center gap-2 text-center">
+        <div className="p-2 rounded-full bg-green-100">
+          <CheckCircle2 className="h-8 w-8 text-green-600" />
+        </div>
+        <p className="font-semibold text-green-700">
+          Password reset successful!
+        </p>
+      </div>
+      <div className="rounded-lg border border-green-300 bg-green-50 p-4 space-y-2">
+        <p className="text-xs font-semibold text-green-800 uppercase tracking-wide">
+          Your new credentials
+        </p>
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-green-700">Username:</span>
+          <code className="font-mono font-bold text-green-900 bg-green-100 px-2 py-0.5 rounded">
+            {username}
+          </code>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-green-700">Password:</span>
+          <code className="font-mono font-bold text-green-900 bg-green-100 px-2 py-0.5 rounded">
+            {password}
+          </code>
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground text-center">
+        Save these credentials. Click below to log in now.
+      </p>
+      <Button
+        className="w-full"
+        onClick={onLogin}
+        data-ocid="admin.reset_success.submit_button"
+      >
+        <LogIn className="h-4 w-4 mr-2" />
+        Log In Now
+      </Button>
+    </div>
+  );
+}
+
+// ─── Login Form ───────────────────────────────────────────────────────────
+function LoginForm({
+  onForgotPassword,
+  prefillUsername,
+  prefillPassword,
+}: {
+  onForgotPassword: () => void;
+  prefillUsername?: string;
+  prefillPassword?: string;
+}) {
   const { loginAdmin } = useAdminSession();
   const adminLogin = useAdminLogin();
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState(prefillUsername ?? "");
+  const [password, setPassword] = useState(prefillPassword ?? "");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [isRetrying, setIsRetrying] = useState(false);
+  const pendingRef = useRef<{ username: string; password: string } | null>(
+    null,
+  );
+  const [isPending, setIsPending] = useState(false);
+
+  // Auto-submit when actor becomes available
+  useEffect(() => {
+    if (actor && pendingRef.current) {
+      const creds = pendingRef.current;
+      pendingRef.current = null;
+      void doLogin(creds.username, creds.password);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actor]);
 
   useEffect(() => {
-    if (!adminLogin.isPending) setIsRetrying(false);
-  }, [adminLogin.isPending]);
+    if (prefillUsername) setUsername(prefillUsername);
+    if (prefillPassword) setPassword(prefillPassword);
+  }, [prefillUsername, prefillPassword]);
+
+  const doLogin = async (u: string, p: string) => {
+    setIsPending(true);
+    setError("");
+    try {
+      const ok = await adminLogin.mutateAsync({ username: u, password: p });
+      if (ok) {
+        await queryClient.invalidateQueries({
+          queryKey: ["hasAdminCredentials"],
+        });
+        loginAdmin(u, p);
+      } else {
+        setError("Invalid username or password.");
+      }
+    } catch {
+      setError("Login failed. Please try again.");
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setIsRetrying(false);
-
-    if (!actor) {
-      setError(
-        "Still connecting to server. Please wait a moment and try again.",
-      );
-      return;
-    }
     if (!username.trim() || !password) {
       setError("Please enter your username and password.");
       return;
     }
-
-    try {
-      const ok = await adminLogin.mutateAsync({
-        username: username.trim(),
-        password,
-      });
-      if (ok) {
-        loginAdmin(username.trim(), password);
-      } else {
-        setError("Invalid username or password. Please try again.");
-      }
-    } catch {
-      setError("Connection error. Retrying automatically...");
-      setIsRetrying(true);
-      setTimeout(async () => {
-        try {
-          const ok = await adminLogin.mutateAsync({
-            username: username.trim(),
-            password,
-          });
-          if (ok) {
-            loginAdmin(username.trim(), password);
-          } else {
-            setError("Invalid username or password. Please try again.");
-            setIsRetrying(false);
-          }
-        } catch {
-          setError(
-            "Login failed. Please check your credentials and try again.",
-          );
-          setIsRetrying(false);
-        }
-      }, 1500);
+    if (!actor) {
+      // Queue login — will fire automatically when actor is ready
+      pendingRef.current = { username: username.trim(), password };
+      setIsPending(true);
+      return;
     }
+    await doLogin(username.trim(), password);
   };
 
-  const isButtonDisabled = !actor || adminLogin.isPending || isRetrying;
+  const fillDefaults = () => {
+    setUsername("pratap");
+    setPassword("Dairy@2024");
+    setError("");
+  };
 
   return (
     <form
@@ -440,18 +402,34 @@ function LoginForm({ onForgotPassword }: { onForgotPassword: () => void }) {
       className="space-y-4"
       data-ocid="admin.login.dialog"
     >
-      {isFetching && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground rounded-md border border-border bg-muted/40 p-2">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          Connecting to server...
+      <ConnectionBanner />
+      <div
+        className="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 p-3 text-xs text-blue-700"
+        data-ocid="admin.login.panel"
+      >
+        <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+        <div className="flex-1">
+          <span>
+            <strong>Default credentials</strong> (restored after each new
+            deployment): username{" "}
+            <code className="font-mono font-semibold">pratap</code> / password{" "}
+            <code className="font-mono font-semibold">Dairy@2024</code>
+          </span>
+          <button
+            type="button"
+            onClick={fillDefaults}
+            className="block mt-1 text-blue-600 font-semibold hover:underline"
+          >
+            Fill defaults
+          </button>
         </div>
-      )}
+      </div>
       <div className="space-y-1.5">
         <Label htmlFor="login-username">Username</Label>
         <Input
           id="login-username"
           autoComplete="username"
-          placeholder="Enter your username"
+          placeholder="Enter username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
@@ -465,7 +443,7 @@ function LoginForm({ onForgotPassword }: { onForgotPassword: () => void }) {
             id="login-password"
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
-            placeholder="Enter your password"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -473,7 +451,7 @@ function LoginForm({ onForgotPassword }: { onForgotPassword: () => void }) {
           />
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             onClick={() => setShowPassword((v) => !v)}
             tabIndex={-1}
           >
@@ -486,48 +464,20 @@ function LoginForm({ onForgotPassword }: { onForgotPassword: () => void }) {
         </div>
       </div>
       {error && (
-        <Alert
-          variant={isRetrying ? "default" : "destructive"}
-          data-ocid="admin.login.error_state"
-          className={
-            isRetrying ? "border-yellow-400 bg-yellow-50 text-yellow-800" : ""
-          }
-        >
-          <AlertDescription className="flex items-center gap-2">
-            {isRetrying && (
-              <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
-            )}
-            {error}
-          </AlertDescription>
+        <Alert variant="destructive" data-ocid="admin.login.error_state">
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      <div
-        className="flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 p-3 text-xs text-blue-700"
-        data-ocid="admin.login.panel"
-      >
-        <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-        <span>
-          <strong>Default credentials</strong> (restored on fresh deploy):
-          <br />
-          Username: <code className="font-mono font-semibold">pratap</code> |
-          Password: <code className="font-mono font-semibold">Dairy@2024</code>
-        </span>
-      </div>
       <Button
         type="submit"
         className="w-full"
-        disabled={isButtonDisabled}
+        disabled={isPending || adminLogin.isPending}
         data-ocid="admin.login.submit_button"
       >
-        {adminLogin.isPending || isRetrying ? (
+        {isPending || adminLogin.isPending ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            {isRetrying ? "Retrying..." : "Logging in..."}
-          </>
-        ) : isFetching ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Connecting...
+            {!actor ? "Waiting for server..." : "Logging in..."}
           </>
         ) : (
           <>
@@ -550,74 +500,19 @@ function LoginForm({ onForgotPassword }: { onForgotPassword: () => void }) {
   );
 }
 
-// ─── AdminGuard ───────────────────────────────────────────────────────────────
+// ─── AdminGuard ──────────────────────────────────────────────────────────────
 export default function AdminGuard({
   children,
   showLogout = false,
 }: AdminGuardProps) {
-  const { isAdminLoggedIn, logoutAdmin } = useAdminSession();
-  const { data: hasCredentials, isLoading, refetch } = useHasAdminCredentials();
-  const { isFetching: actorLoading, actor } = useActor();
-  const [view, setView] = useState<"login" | "reset">("login");
-  const [resetSuccessMsg, setResetSuccessMsg] = useState("");
-  const [timedOut, setTimedOut] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Only show loading if actor is fetching, or actor is ready and credentials query is running
-  const isConnecting =
-    actorLoading || (!!actor && isLoading && hasCredentials === undefined);
-
-  // After 15 seconds of loading, show a retry button
-  useEffect(() => {
-    if (isConnecting && !timedOut) {
-      timeoutRef.current = setTimeout(() => setTimedOut(true), 15000);
-    } else {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      if (!isConnecting) setTimedOut(false);
-    }
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, [isConnecting, timedOut]);
-
-  const handleRetry = () => {
-    setTimedOut(false);
-    void refetch();
-  };
-
-  if (!timedOut && (isConnecting || hasCredentials === undefined)) {
-    return (
-      <div
-        className="flex items-center justify-center min-h-[40vh]"
-        data-ocid="admin.loading_state"
-      >
-        {timedOut ? (
-          <div className="flex flex-col items-center gap-4 text-center max-w-xs">
-            <p className="text-sm text-muted-foreground">
-              Taking longer than usual. The server may be starting up.
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRetry}
-              data-ocid="admin.retry.button"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Try Again
-            </Button>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-3 text-muted-foreground">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm">Connecting to server...</p>
-          </div>
-        )}
-      </div>
-    );
-  }
+  const { isAdminLoggedIn, loginAdmin, logoutAdmin } = useAdminSession();
+  const [view, setView] = useState<"login" | "reset" | "reset_success">(
+    "login",
+  );
+  const [resetCreds, setResetCreds] = useState<{
+    username: string;
+    password: string;
+  } | null>(null);
 
   if (isAdminLoggedIn) {
     return (
@@ -641,59 +536,63 @@ export default function AdminGuard({
     );
   }
 
-  const isFirstTime = !timedOut && hasCredentials === false;
-  const cardTitle = isFirstTime
-    ? "Admin Setup"
-    : view === "reset"
+  const cardTitle =
+    view === "reset"
       ? "Reset Password"
-      : "Admin Login";
-  const cardDescription = isFirstTime
-    ? "Create your admin username and password to get started."
-    : view === "reset"
+      : view === "reset_success"
+        ? "Password Reset"
+        : "Admin Login";
+  const cardDescription =
+    view === "reset"
       ? "Enter the verification code to reset your password."
-      : "Enter your admin credentials to access this section.";
-  const cardIcon = isFirstTime ? (
-    <KeyRound className="h-8 w-8 text-primary" />
-  ) : view === "reset" ? (
-    <RotateCcw className="h-8 w-8 text-primary" />
-  ) : (
-    <Shield className="h-8 w-8 text-primary" />
-  );
+      : view === "reset_success"
+        ? "Your password has been reset successfully."
+        : "Enter your admin credentials to access this section.";
+  const cardIcon =
+    view === "reset" ? (
+      <RotateCcw className="h-8 w-8 text-primary" />
+    ) : view === "reset_success" ? (
+      <CheckCircle2 className="h-8 w-8 text-green-600" />
+    ) : (
+      <Shield className="h-8 w-8 text-primary" />
+    );
 
   return (
     <div className="flex items-center justify-center min-h-[50vh] px-4">
       <Card className="w-full max-w-sm border-border shadow-lg">
         <CardHeader className="text-center pb-4">
           <div className="flex justify-center mb-3">
-            <div className="p-3 bg-primary/10 rounded-full">{cardIcon}</div>
+            <div
+              className={`p-3 rounded-full ${view === "reset_success" ? "bg-green-100" : "bg-primary/10"}`}
+            >
+              {cardIcon}
+            </div>
           </div>
           <CardTitle className="text-xl">{cardTitle}</CardTitle>
           <CardDescription>{cardDescription}</CardDescription>
         </CardHeader>
         <CardContent>
-          {resetSuccessMsg && view === "login" && (
-            <Alert
-              className="mb-4 border-green-500 bg-green-50 text-green-800"
-              data-ocid="admin.login.success_state"
-            >
-              <AlertDescription>{resetSuccessMsg}</AlertDescription>
-            </Alert>
-          )}
-          {isFirstTime ? (
-            <SetupForm />
-          ) : view === "reset" ? (
+          {view === "reset" ? (
             <ResetPasswordForm
-              onBack={(msg) => {
-                setView("login");
-                if (msg) setResetSuccessMsg(msg);
+              onSuccess={(username, password) => {
+                setResetCreds({ username, password });
+                setView("reset_success");
               }}
+              onBack={() => setView("login")}
+            />
+          ) : view === "reset_success" && resetCreds ? (
+            <ResetSuccessScreen
+              username={resetCreds.username}
+              password={resetCreds.password}
+              onLogin={() =>
+                loginAdmin(resetCreds.username, resetCreds.password)
+              }
             />
           ) : (
             <LoginForm
-              onForgotPassword={() => {
-                setResetSuccessMsg("");
-                setView("reset");
-              }}
+              onForgotPassword={() => setView("reset")}
+              prefillUsername={resetCreds?.username}
+              prefillPassword={resetCreds?.password}
             />
           )}
         </CardContent>

@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import { Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   History,
@@ -155,6 +156,7 @@ export default function Layout() {
           </div>
         </div>
       </footer>
+      <Toaster richColors position="top-right" />
     </div>
   );
 }
