@@ -494,7 +494,7 @@ export default function OrderForm() {
                     aria-label="Click to open PhonePe app for payment"
                   >
                     <img
-                      src="/assets/IMG_3581-1.jpeg"
+                      src="/assets/uploads/f1957ce3-d045-4ccb-b6ef-d58632e101c8-1-1.jpg"
                       alt="State Bank of India PhonePe Payment QR Code"
                       className="w-56 h-56 md:w-64 md:h-64 object-contain pointer-events-none"
                       onError={(e) => {

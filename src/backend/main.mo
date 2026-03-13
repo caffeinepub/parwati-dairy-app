@@ -151,13 +151,8 @@ actor {
     true;
   };
 
-  // Verify admin helper (used internally)
-  func isValidAdmin(password : Text) : Bool {
-    switch (adminCredentials) {
-      case (null) { false };
-      case (?creds) { creds.passwordHash == password };
-    };
-  };
+  // Login page removed - all admin operations are open
+  func isValidAdmin(_ : Text) : Bool { true };
 
   public shared func placeOrder(
     customerId : Nat,

@@ -1123,7 +1123,7 @@ export default function RegularCustomers() {
           </div>
 
           {/* Admin-gated content */}
-          <AdminGuard>
+          <AdminGuard noLoginForm>
             {/* Summary stats */}
             {customers && customers.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">

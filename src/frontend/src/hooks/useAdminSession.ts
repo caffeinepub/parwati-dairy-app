@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext } from "react";
 
-const SESSION_KEY = "admin_session";
-const SESSION_PASSWORD_KEY = "admin_session_password";
-const SESSION_USERNAME_KEY = "admin_session_username";
+// Login page has been removed. Admin dashboard is accessible directly.
+// All admin operations use a fixed bypass token since isValidAdmin always returns true on the backend.
+const BYPASS_TOKEN = "admin";
 
 interface AdminSessionContextValue {
   isAdminLoggedIn: boolean;
@@ -13,9 +13,9 @@ interface AdminSessionContextValue {
 }
 
 const AdminSessionContext = createContext<AdminSessionContextValue>({
-  isAdminLoggedIn: false,
-  adminPassword: "",
-  adminUsername: "",
+  isAdminLoggedIn: true,
+  adminPassword: BYPASS_TOKEN,
+  adminUsername: "admin",
   loginAdmin: () => {},
   logoutAdmin: () => {},
 });
@@ -27,81 +27,15 @@ interface AdminSessionProviderProps {
 export function AdminSessionProvider({
   children,
 }: AdminSessionProviderProps): React.ReactElement {
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
-    try {
-      return sessionStorage.getItem(SESSION_KEY) === "true";
-    } catch {
-      return false;
-    }
-  });
-
-  const [adminPassword, setAdminPassword] = useState<string>(() => {
-    try {
-      return sessionStorage.getItem(SESSION_PASSWORD_KEY) ?? "";
-    } catch {
-      return "";
-    }
-  });
-
-  const [adminUsername, setAdminUsername] = useState<string>(() => {
-    try {
-      return sessionStorage.getItem(SESSION_USERNAME_KEY) ?? "";
-    } catch {
-      return "";
-    }
-  });
-
-  useEffect(() => {
-    const handleStorage = () => {
-      try {
-        setIsAdminLoggedIn(sessionStorage.getItem(SESSION_KEY) === "true");
-        setAdminPassword(sessionStorage.getItem(SESSION_PASSWORD_KEY) ?? "");
-        setAdminUsername(sessionStorage.getItem(SESSION_USERNAME_KEY) ?? "");
-      } catch {
-        setIsAdminLoggedIn(false);
-        setAdminPassword("");
-        setAdminUsername("");
-      }
-    };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
-
-  const loginAdmin = (username: string, password: string) => {
-    try {
-      sessionStorage.setItem(SESSION_KEY, "true");
-      sessionStorage.setItem(SESSION_PASSWORD_KEY, password);
-      sessionStorage.setItem(SESSION_USERNAME_KEY, username);
-    } catch {
-      // sessionStorage unavailable
-    }
-    setIsAdminLoggedIn(true);
-    setAdminPassword(password);
-    setAdminUsername(username);
-  };
-
-  const logoutAdmin = () => {
-    try {
-      sessionStorage.removeItem(SESSION_KEY);
-      sessionStorage.removeItem(SESSION_PASSWORD_KEY);
-      sessionStorage.removeItem(SESSION_USERNAME_KEY);
-    } catch {
-      // ignore
-    }
-    setIsAdminLoggedIn(false);
-    setAdminPassword("");
-    setAdminUsername("");
-  };
-
   return React.createElement(
     AdminSessionContext.Provider,
     {
       value: {
-        isAdminLoggedIn,
-        adminPassword,
-        adminUsername,
-        loginAdmin,
-        logoutAdmin,
+        isAdminLoggedIn: true,
+        adminPassword: BYPASS_TOKEN,
+        adminUsername: "admin",
+        loginAdmin: () => {},
+        logoutAdmin: () => {},
       },
     },
     children,

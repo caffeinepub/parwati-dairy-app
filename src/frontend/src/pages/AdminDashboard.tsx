@@ -30,7 +30,6 @@ import {
   IndianRupee,
   KeyRound,
   Loader2,
-  LogOut,
   Package,
   Shield,
   ShoppingBag,
@@ -39,7 +38,6 @@ import {
 import { useState } from "react";
 import type { Order } from "../backend";
 import AdminGuard from "../components/AdminGuard";
-import { useAdminSession } from "../hooks/useAdminSession";
 import {
   useAllOrders,
   useChangeAdminCredentials,
@@ -90,8 +88,7 @@ function statusBadgeVariant(
 
 // ─── All Orders Tab ────────────────────────────────────────────────────────────────────────────────────
 function AllOrdersTab() {
-  const { isAdminLoggedIn } = useAdminSession();
-  const { data: orders, isLoading, error } = useAllOrders(isAdminLoggedIn);
+  const { data: orders, isLoading, error } = useAllOrders(true);
 
   if (isLoading) {
     return (
@@ -541,8 +538,6 @@ function ChangePasswordSection() {
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────────────────────────────────────
 export default function AdminDashboard() {
-  const { logoutAdmin } = useAdminSession();
-
   return (
     <div className="min-h-[calc(100vh-8rem)] py-8 md:py-12">
       <div className="container mx-auto px-4">
@@ -565,19 +560,6 @@ export default function AdminDashboard() {
 
           <AdminGuard>
             <div className="space-y-8">
-              <div className="flex justify-end">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={logoutAdmin}
-                  className="text-muted-foreground"
-                  data-ocid="admin.logout.button"
-                >
-                  <LogOut className="h-3.5 w-3.5 mr-1.5" />
-                  Logout Admin
-                </Button>
-              </div>
-
               <Tabs defaultValue="customers">
                 <TabsList className="mb-6" data-ocid="admin.tab">
                   <TabsTrigger
